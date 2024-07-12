@@ -1,0 +1,3 @@
+INCLUDEPATH += ../core
+DEPENDPATH += ../core
+

@@ -1,22 +1,18 @@
 #include "MachineControl.h"
-#include "PowerControl.h"
 
-class PowerControlPrivate{
-public:
-    PowerControl * Pc;
-};
-
-MachineControl::MachineControl(QObject *parent):QObject(parent),d(new PowerControlPrivate)
+MachineControl::MachineControl(QObject *parent):QObject(parent)
 {
+    this->d = new PowerControl;
    qDebug()<<Q_FUNC_INFO<<"MachineControl类构造";
 }
 
 MachineControl::~MachineControl()
 {
+    delete  d;
     qDebug()<<Q_FUNC_INFO<<"MachineControl类析沟";
 }
 
-void MachineControl::Power(int PowerRight,int TimeOut)
+void MachineControl::setPower(int PowerRight,int TimeOut)
 {
     Success info_Success;
     Fault info_Fault;
@@ -25,13 +21,13 @@ void MachineControl::Power(int PowerRight,int TimeOut)
     try {
         if(PowerRight == PowerOff)//这里后期优化 可以考虑工厂模式 因时间有限暂不作处理
         {
-           d->Pc->MachineOff(TimeOut);
+           d->MachineOff(TimeOut);
         }else if(PowerRight == Sleep)
         {
-            d->Pc->MachineSleep(TimeOut);
+            d->MachineSleep(TimeOut);
         }else if(PowerRight == Reboot)
         {
-            d->Pc->MachineReboot(TimeOut);
+            d->MachineReboot(TimeOut);
         }
     } catch (const std::exception& e) {
         printRecord = &info_Fault;

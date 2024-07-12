@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>interfacefunction/Machine.qml</file>
+        <file>interfacefunction/MainWidget.qml</file>
+    </qresource>
+</RCC>

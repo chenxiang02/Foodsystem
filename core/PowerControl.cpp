@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-PowerControl::PowerControl(QObject * parent) : QObject(parent)
+PowerControl::PowerControl()
 {
    qDebug()<<Q_FUNC_INFO<<"PowerControl类构造";
 }
@@ -68,18 +68,7 @@ bool PowerControl::MachineReboot(time_s Reboot_Sec)
         BoolReturnValue ret = system("reboot");
         return ret;
     }
-    else //延时重启
-    {
-       QTimer * timer = new QTimer();
-       int RebootSEec = Reboot_Sec; //因为qt5要注入类型（qt6 没这么麻烦） 避免麻烦直接接受
-       timer->start(RebootSEec);
-       connect(timer,&QTimer::timeout,this,[&]{
-           timer->stop();
-           delete timer;
-           system("reboot");
-       });
-       return true;
-    }
+
     return false;
 #endif
 }

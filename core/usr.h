@@ -2,7 +2,9 @@
 #define _USR_H
 
 #include "SqlSystem.h"
-#include <QDebug>
+#include "CodeHandler.h"
+#include "systemlog/fault.h"
+
 
 class User : public SqlSystem
 {
@@ -10,19 +12,34 @@ public:
     User();
     ~User();
 
+    enum UserRight //用户权限
+    {
+        NormalUser=0,
+        PrivilegedUser,
+        SupremeAuthority
+    };
+
     void SqlInit() override;//初始化Sql
 
-    bool InsertData(const int RightInsert, const QString InsertInfo) override;
+    QString getSpecificClassName() override;
 
-    bool DeleteData(const int RightDelete, const QString DeleteInfo) override;
+    bool InsertData(const int RightInsert, const QStringList InsertInfo) override;
 
-    void UpdateData(const int RightUpdate, const QString UpdateInfo) override;
+    bool DeleteData(const int RightDelete, const QStringList DeleteInfo) override;
 
-    void FindData(const int RightFind, const QString FindInfo) override;
+    bool UpdateData(const int RightUpdate, const QStringList UpdateInfo) override;
+
+    QMap<int,QStringList> FindData(const int RightFind, const QStringList FindInfo) override;
 private:
-    QSqlDatabase ConnectSql;
-    QSqlQuery * sqlexe;
-    QDir * sqlPath;
+    QSqlDatabase ConnectSql;//sql操作
+
+    QSqlQuery * sqlexe;//sql执行语句
+
+    QDir * sqlPath;//默认sql文件路径获取
+
+    CodeHandler * HashSecretkey;//加密解密功能类
+
+    Fault printError;
 };
 
 #endif

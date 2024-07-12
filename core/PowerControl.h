@@ -2,8 +2,6 @@
 #define _POWER_CONTROL_H
 
 #include <QString>
-#include <QTimer>
-#include <QObject>
 #include <QDebug>
 
 typedef int time_s;
@@ -17,11 +15,10 @@ enum TimeSet{
 #define USE_METHOD 1
 
 
-class PowerControl : public QObject
+class PowerControl
 {
-    Q_OBJECT
 public:
-    PowerControl(QObject * parent = nullptr);
+    PowerControl();
     ~PowerControl();
 
     bool MachineOff(time_s off_Sec = 0);//关机函数

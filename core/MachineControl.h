@@ -9,6 +9,8 @@
 #include "systemlog/success.h"
 #include "systemlog/fault.h"
 #include "systemlog/waring.h"
+#include "PowerControl.h"
+
 
 enum{
     PowerOff = 0,
@@ -16,18 +18,19 @@ enum{
     Reboot
 };
 
-class PowerControlPrivate;
-
 class MachineControl : public QObject//这种写法不好 有时间可以将他抽象封装一下
 {
     Q_OBJECT
 public:
-   MachineControl(QObject *parent=nullptr);
+    explicit MachineControl(QObject *parent=nullptr);
    ~MachineControl();
-   void Power(int PowerRight,int TimeOut);
+   Q_INVOKABLE void setPower(int PowerRight,int TimeOut);
+
+signals:
+   void PowerSignal();
 
 private:
-   QScopedPointer<PowerControlPrivate> d;
+   PowerControl * d;
 };
 
 

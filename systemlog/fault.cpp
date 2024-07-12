@@ -4,7 +4,7 @@ Fault::Fault()
 {
     qDebug()<<Q_FUNC_INFO<<"Fault类构造";
 
-    pathDir = new QDir("/etc/FoodSystem");
+    pathDir = new QDir("/etc/FoodSystem/log");
 
     if(!pathDir->exists(pathDir->path())) // 如果该目录不存在则自动创建
     {

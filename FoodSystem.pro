@@ -1,4 +1,4 @@
-QT += quick network sql
+QT += quick sql network quickcontrols2
 
 CONFIG += c++11
 
@@ -16,9 +16,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp
 
-RESOURCES += qml.qrc
+LIBS += -lcrypto
+
+RESOURCES += qml.qrc \
+    mainWidget.qrc
+
+
 # Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
+QML_IMPORT_PATH = /interfacefunction/machine.qml
 
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
@@ -27,6 +32,8 @@ QML_DESIGNER_IMPORT_PATH =
 include(./core/core.pri)
 #系统日志目录
 include(./systemlog/systemLog.pri)
+#通讯模块
+include(./network/network.pri)
 
 
 
@@ -35,7 +42,7 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-#已启用此方法 发现无法胜任精确定位错误要求
+#此方法无法胜任精确定位错误要求 后期有时间可以具体看看是否存在使用不当
 unix:!macx: LIBS += -L$$PWD/Breakpad/ -lqBreakpad
 
 INCLUDEPATH += $$PWD/Breakpad/include
