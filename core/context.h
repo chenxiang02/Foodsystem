@@ -6,6 +6,7 @@
 #include "usr.h"
 #include "account.h"
 #include "food.h"
+#include "network/CirThread.h"
 
 class Context : public QObject
 {
@@ -21,6 +22,10 @@ public:
     Q_INVOKABLE QMap<int,QStringList> applyFindData(const int RightFind,const QStringList FindInfo);
     Q_INVOKABLE bool applyUpdateData(const int RightUpdate,const QStringList UpdateInfo);
     Q_INVOKABLE void setMethod(QString className);
+
+    Q_INVOKABLE int loginVerity(QStringList info);
+
+    Q_INVOKABLE void clearSqlObject();
 
 };
 

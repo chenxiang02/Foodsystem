@@ -39,10 +39,7 @@ Item {
 
             background:Rectangle {
                 radius:25
-                gradient: Gradient{
-                    GradientStop{position:0;color:"skyblue"}
-                    GradientStop{position:1;color:"lightblue"}
-                }
+                color:"lightblue"
             }
 
             onClicked: {
@@ -58,10 +55,7 @@ Item {
 
             background:Rectangle {
                 radius:25
-                gradient: Gradient{
-                    GradientStop{position:0;color:"skyblue"}
-                    GradientStop{position:1;color:"lightblue"}
-                }
+                color:"lightblue"
             }
 
             onClicked: {
@@ -79,10 +73,7 @@ Item {
 
             background:Rectangle {
                 radius:25
-                gradient: Gradient{
-                    GradientStop{position:0;color:"skyblue"}
-                    GradientStop{position:1;color:"lightblue"}
-                }
+                color:"lightblue"
 
             }
 
@@ -101,10 +92,7 @@ Item {
 
              background:Rectangle {
                  radius:25
-                 gradient: Gradient{
-                     GradientStop{position:0;color:"skyblue"}
-                     GradientStop{position:1;color:"lightblue"}
-                 }
+                 color:"lightblue"
 
              }
 

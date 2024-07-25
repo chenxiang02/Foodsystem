@@ -29,9 +29,12 @@ Food::~Food()
 
 void Food::SqlInit()
 {
-    this->ConnectSql = QSqlDatabase::addDatabase("QSQLITE");
+    if(QSqlDatabase::contains("qt_sql_default_connection"))//如果有默认连接
+        this->ConnectSql = QSqlDatabase::database("qt_sql_default_connection");
+    else
+        this->ConnectSql = QSqlDatabase::addDatabase("QSQLITE");
 
-    this->ConnectSql.setDatabaseName(this->sqlPath->path()+"FoodDate.db");
+    this->ConnectSql.setDatabaseName("FoodDate.db");
 
     this->ConnectSql.open();
 
@@ -47,7 +50,9 @@ void Food::SqlInit()
                        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                        "foodname TEXT NOT NULL UNIQUE,"
                        "status TEXT NOT NULL,"
-                       "createtime TEXT NOT NULL"
+                       "foodtype TEXT NOT NULL,"
+                       "price TEXT NOT NULL,"
+                       "createtime TEXT NOT NULL,"
                        "count TEXT NOT NULL"
                        ");");
 }
@@ -65,43 +70,37 @@ bool Food::InsertData(const int RightInsert, const QStringList InsertInfo)
         return false; //后期优化可以考虑用错误集来代替 方便排错
      }
 
-    if(InsertInfo.length() > 4 || InsertInfo.length() <= 0)
-    {
-        qDebug()<<Q_FUNC_INFO<<"插入无效数据";
-        return false;
-    }
 
     //提示信息
     qDebug()<<Q_FUNC_INFO<<"插入操作执行";
 
     if(RightInsert == rowInsert)//这可以优化一下 难道表会固定5列数据吗 可以写出来更具有变化兼容性的插入
     {
-        QString FoodName=InsertInfo.at(0),Status=InsertInfo.at(1),Count=InsertInfo.at(2);
-
-        this->sqlexe->prepare("INSERT INFO food(foodname,status,createtime,count)"
-                              " VALUES (':foodname',':status',':createtime',':count');");
+        QString FoodName=InsertInfo.at(0),Status=InsertInfo.at(1),Type = InsertInfo.at(2)
+                ,Price = InsertInfo.at(3),Count=InsertInfo.at(4);
 
         //加密数据
         QString EncryptFoodName = this->HashSecretkey->EncryptCode(FoodName);
 
         QString EncryptStatus = this->HashSecretkey->EncryptCode(Status);
 
+        QString EncryptType = this->HashSecretkey->EncryptCode(Type);
+
+        QString EncryptPrice = this->HashSecretkey->EncryptCode(Price);
+
         QString EncryptCreateTime = this->HashSecretkey->EncryptCode(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:MM:ss"));
 
         QString EncryptCount = this->HashSecretkey->EncryptCode(Count);
 
-        //绑定
-        this->sqlexe->bindValue(":username",EncryptFoodName);
-        this->sqlexe->bindValue(":password",EncryptStatus);
-        this->sqlexe->bindValue(":createtime",EncryptCreateTime);
-        this->sqlexe->bindValue(":role",EncryptCount);
+        QString SQLdate = "INSERT INTO food(foodname,status,foodtype,price,createtime,count) VALUES"
+                          " ('"+EncryptFoodName+"','"+EncryptStatus+"','"+EncryptType+"','"
+                               +EncryptPrice+"','"+EncryptCreateTime+"','"+EncryptCount+"');";
 
-
-        bool ret = this->sqlexe->exec();
-
+        bool ret = this->sqlexe->exec(SQLdate);
         if(!ret)
         {
             qDebug()<<Q_FUNC_INFO<<"插入执行失败";
+            qDebug()<<Q_FUNC_INFO<<this->sqlexe->lastError().text();
             printError.printLog("food表行插入执行失败");
             return ret;
         }
@@ -177,12 +176,11 @@ bool Food::DeleteData(const int RightDelete, const QStringList DeleteInfo)
     {
         QString ColumnName = DeleteInfo.at(0),deleteValue = DeleteInfo.at(1);
 
-        this->sqlexe->prepare("DELETE FROM food WHERE :ColumnName = ':DeleteValue';");
-
         QString EncryptDeleteValue = this->HashSecretkey->EncryptCode(deleteValue);
 
+        this->sqlexe->prepare("DELETE FROM food WHERE :ColumnName = '"+EncryptDeleteValue+"';");
+
         this->sqlexe->bindValue(":ColumnName",ColumnName);
-        this->sqlexe->bindValue(":DeleteValue",EncryptDeleteValue);
 
         bool ret = this->sqlexe->exec();
 
@@ -222,18 +220,16 @@ bool Food::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
         QString AppointName = UpdateInfo.at(0),AppointValue = UpdateInfo.at(1),
                 ColumnName = UpdateInfo.at(2),UpdateValue = UpdateInfo.at(3);
 
-        this->sqlexe->prepare("UPDATE food SET :AppointName = ':AppointValue'"
-                              " WHERE :Column = ':UpdateValue'");
-
         //加密
         QString EncryptAppointValue = this->HashSecretkey->EncryptCode(AppointValue);
 
         QString EncryptUpdateValue = this->HashSecretkey->EncryptCode(UpdateValue);
 
+        this->sqlexe->prepare("UPDATE food SET :AppointName = '"+EncryptAppointValue+"'"
+                              " WHERE :Column = '"+EncryptUpdateValue+"'");
+
         this->sqlexe->bindValue(":AppointName",AppointName);
-        this->sqlexe->bindValue(":AppointValue",EncryptAppointValue);
         this->sqlexe->bindValue(":Column",ColumnName);
-        this->sqlexe->bindValue(":UpdateValue",EncryptUpdateValue);
 
         bool ret = this->sqlexe->exec();
 
@@ -256,11 +252,6 @@ bool Food::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
                 UpdateThreeC = UpdateInfo.at(6),UpdateThree = UpdateInfo.at(7),
                 FindName = UpdateInfo.at(0),FindValue = UpdateInfo.at(1);
 
-
-        this->sqlexe->prepare("UPDATE food SET :UpdateOne = ':UpdateOneValue',"
-                              ":UpdateTwo = ':UpdateTwoValue',"
-                              ":UpdateThree = ':UpdateThreeValue' WHERE :FindName = ':FindValue';");
-
         //加密
         QString EncryptUpdateOne = this->HashSecretkey->EncryptCode(UpdateOne);
 
@@ -270,14 +261,14 @@ bool Food::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
 
         QString EncryptFindValue = this->HashSecretkey->EncryptCode(FindValue);
 
+        this->sqlexe->prepare("UPDATE food SET :UpdateOne = '"+EncryptUpdateOne+"',"
+                              ":UpdateTwo = '"+EncryptUpdateTwo+"',"
+                              ":UpdateThree = '"+EncryptUpdateThree+"' WHERE :FindName = '"+EncryptFindValue+"';");
+
         this->sqlexe->bindValue(":UpdateOne",UpdateOneC);
-        this->sqlexe->bindValue(":UpdateOneValue",EncryptUpdateOne);
         this->sqlexe->bindValue(":UpdateTwo",UpdateTwoC);
-        this->sqlexe->bindValue(":UpdateTwoValue",EncryptUpdateTwo);
         this->sqlexe->bindValue(":UpdateThree",UpdateThreeC);
-        this->sqlexe->bindValue(":UpdateThreeValue",EncryptUpdateThree);
         this->sqlexe->bindValue(":FindName",FindName);
-        this->sqlexe->bindValue(":FindValue",EncryptFindValue);
 
         bool ret = this->sqlexe->exec();
 
@@ -311,12 +302,13 @@ QMap<int,QStringList> Food::FindData(const int RightFind, const QStringList Find
     if(RightFind == AppointFind)
     {
         QString IndexName = FindInfo.at(0),IndexValue = FindInfo.at(1);
-        this->sqlexe->prepare("SELECT * FROM food WHERE :Column = ':Value';");
 
         QString EncryptIndexValue = this->HashSecretkey->EncryptCode(IndexValue);
 
+        this->sqlexe->prepare("SELECT * FROM food WHERE :Column = '"+EncryptIndexValue+"';");
+
         this->sqlexe->bindValue(":Column",IndexName);
-        this->sqlexe->bindValue(":Value",EncryptIndexValue);
+
 
         bool status = this->sqlexe->exec();
 
@@ -359,15 +351,23 @@ QMap<int,QStringList> Food::FindData(const int RightFind, const QStringList Find
             printError.printLog("food用户表查询失败");
             return ret;
         }
-
+        QString foodname,Status,type,birtime,count;
+        QStringList arg;//(实际运行可能会有查询内容过多而造成效率问题,后期要考虑分库分表,redis缓存)
         while(this->sqlexe->next())//将查询结果存储 并返回
         {
-            QStringList arg;//申请栈空间比放在外面申请清除速度要快(实际运行可能会有查询内容过多而造成效率问题,后期要考虑分库分表,redis缓存)
-            arg<<this->sqlexe->value(1).toString();
-            arg<<this->sqlexe->value(2).toString();
-            arg<<this->sqlexe->value(3).toString();
-            arg<<this->sqlexe->value(4).toString();
+            foodname = this->HashSecretkey->DecryptCode(this->sqlexe->value(1).toString());
+            Status = this->HashSecretkey->DecryptCode(this->sqlexe->value(2).toString());
+            type = this->HashSecretkey->DecryptCode(this->sqlexe->value(3).toString());
+            birtime = this->HashSecretkey->DecryptCode(this->sqlexe->value(4).toString());
+            count = this->HashSecretkey->DecryptCode(this->sqlexe->value(5).toString());
+
+            qDebug()<<Q_FUNC_INFO<<"test";
+
+            arg<<foodname<<Status<<type<<birtime<<count;
+
             ret.insert(this->sqlexe->value(0).toInt(),arg);
+
+            arg.clear();
         }
 
         this->sqlexe->clear();

@@ -29,7 +29,10 @@ Account::~Account()
 
 void Account::SqlInit()
 {
-    this->ConnectSql = QSqlDatabase::addDatabase("QSQLITE");
+    if(QSqlDatabase::contains("qt_sql_default_connection"))//如果有默认连接
+        this->ConnectSql = QSqlDatabase::database("qt_sql_default_connection");
+    else
+        this->ConnectSql = QSqlDatabase::addDatabase("QSQLITE");
 
     this->ConnectSql.setDatabaseName(this->sqlPath->path()+"FoodDate.db");
 
@@ -78,9 +81,6 @@ bool Account::InsertData(const int RightInsert, const QStringList InsertInfo)
     {
         QString menu=InsertInfo.at(0),Status=InsertInfo.at(1),Count=InsertInfo.at(2);
 
-        this->sqlexe->prepare("INSERT INFO account(menu,status,selltime,totalvalue)"
-                              " VALUES (':menu',':status',':selltime',':totalvalue');");
-
         //加密数据
         QString EncryptFoodName = this->HashSecretkey->EncryptCode(menu);
 
@@ -96,6 +96,8 @@ bool Account::InsertData(const int RightInsert, const QStringList InsertInfo)
         this->sqlexe->bindValue(":selltime",EncryptCreateTime);
         this->sqlexe->bindValue(":totalvalue",EncryptCount);
 
+        this->sqlexe->prepare("INSERT INFO account(menu,status,selltime,totalvalue)"
+                              " VALUES ('"+EncryptFoodName+"','"+EncryptStatus+"','"+EncryptCreateTime+"','"+EncryptCount+"');");
 
         bool ret = this->sqlexe->exec();
 
@@ -113,8 +115,6 @@ bool Account::InsertData(const int RightInsert, const QStringList InsertInfo)
     else if(RightInsert == columnInsert)
     {
         QString TableName = "users",ColumnName = InsertInfo.at(0),DataType = InsertInfo.at(1);
-        this->sqlexe->prepare("ALTER TABLE :TableName ADD COLUMN"
-                              ":ColumnName :DataType");
 
         //加密数据
         QString EncryptTableName = this->HashSecretkey->EncryptCode(TableName);
@@ -123,11 +123,13 @@ bool Account::InsertData(const int RightInsert, const QStringList InsertInfo)
 
         QString EncryptDataType = this->HashSecretkey->EncryptCode(DataType);
 
+        this->sqlexe->prepare("ALTER TABLE :TableName ADD COLUMN"
+                              ":ColumnName :DataType");
+
         //绑定
         this->sqlexe->bindValue(":TableName",EncryptTableName);
         this->sqlexe->bindValue(":ColumnName",EncryptColumnName);
         this->sqlexe->bindValue(":DataType",EncryptDataType);
-
 
         bool ret = this->sqlexe->exec();
 
@@ -177,12 +179,13 @@ bool Account::DeleteData(const int RightDelete, const QStringList DeleteInfo)
     {
         QString ColumnName = DeleteInfo.at(0),deleteValue = DeleteInfo.at(1);
 
-        this->sqlexe->prepare("DELETE FROM account WHERE :ColumnName = ':DeleteValue';");
+
 
         QString EncryptDeleteValue = this->HashSecretkey->EncryptCode(deleteValue);
 
+        this->sqlexe->prepare("DELETE FROM account WHERE :ColumnName = '"+EncryptDeleteValue+"';");
+
         this->sqlexe->bindValue(":ColumnName",ColumnName);
-        this->sqlexe->bindValue(":DeleteValue",EncryptDeleteValue);
 
         bool ret = this->sqlexe->exec();
 
@@ -222,18 +225,16 @@ bool Account::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
         QString AppointName = UpdateInfo.at(0),AppointValue = UpdateInfo.at(1),
                 ColumnName = UpdateInfo.at(2),UpdateValue = UpdateInfo.at(3);
 
-        this->sqlexe->prepare("UPDATE account SET :AppointName = ':AppointValue'"
-                              " WHERE :Column = ':UpdateValue'");
-
         //加密
         QString EncryptAppointValue = this->HashSecretkey->EncryptCode(AppointValue);
 
         QString EncryptUpdateValue = this->HashSecretkey->EncryptCode(UpdateValue);
 
+        this->sqlexe->prepare("UPDATE account SET :AppointName = '"+EncryptAppointValue+"'"
+                              " WHERE :Column = '"+EncryptUpdateValue+"'");
+
         this->sqlexe->bindValue(":AppointName",AppointName);
-        this->sqlexe->bindValue(":AppointValue",EncryptAppointValue);
         this->sqlexe->bindValue(":Column",ColumnName);
-        this->sqlexe->bindValue(":UpdateValue",EncryptUpdateValue);
 
         bool ret = this->sqlexe->exec();
 
@@ -256,11 +257,6 @@ bool Account::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
                 UpdateThreeC = UpdateInfo.at(6),UpdateThree = UpdateInfo.at(7),
                 FindName = UpdateInfo.at(0),FindValue = UpdateInfo.at(1);
 
-
-        this->sqlexe->prepare("UPDATE food SET :UpdateOne = ':UpdateOneValue',"
-                              ":UpdateTwo = ':UpdateTwoValue',"
-                              ":UpdateThree = ':UpdateThreeValue' WHERE :FindName = ':FindValue';");
-
         //加密
         QString EncryptUpdateOne = this->HashSecretkey->EncryptCode(UpdateOne);
 
@@ -270,14 +266,14 @@ bool Account::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
 
         QString EncryptFindValue = this->HashSecretkey->EncryptCode(FindValue);
 
+        this->sqlexe->prepare("UPDATE food SET :UpdateOne = '"+EncryptUpdateOne+"',"
+                              ":UpdateTwo = '"+EncryptUpdateTwo+"',"
+                              ":UpdateThree = '"+EncryptUpdateThree+"' WHERE :FindName = '"+EncryptFindValue+"';");
+
         this->sqlexe->bindValue(":UpdateOne",UpdateOneC);
-        this->sqlexe->bindValue(":UpdateOneValue",EncryptUpdateOne);
         this->sqlexe->bindValue(":UpdateTwo",UpdateTwoC);
-        this->sqlexe->bindValue(":UpdateTwoValue",EncryptUpdateTwo);
         this->sqlexe->bindValue(":UpdateThree",UpdateThreeC);
-        this->sqlexe->bindValue(":UpdateThreeValue",EncryptUpdateThree);
         this->sqlexe->bindValue(":FindName",FindName);
-        this->sqlexe->bindValue(":FindValue",EncryptFindValue);
 
         bool ret = this->sqlexe->exec();
 
@@ -360,13 +356,17 @@ QMap<int,QStringList> Account::FindData(const int RightFind, const QStringList F
             return ret;
         }
 
+        QString menu,Status,count;
         while(this->sqlexe->next())//将查询结果存储 并返回
         {
             QStringList arg;//申请栈空间比放在外面申请清除速度要快(实际运行可能会有查询内容过多而造成效率问题,后期要考虑分库分表,redis缓存)
-            arg<<this->sqlexe->value(1).toString();
-            arg<<this->sqlexe->value(2).toString();
-            arg<<this->sqlexe->value(3).toString();
-            arg<<this->sqlexe->value(4).toString();
+
+            menu = this->HashSecretkey->DecryptCode(this->sqlexe->value(1).toString());
+            Status = this->HashSecretkey->DecryptCode(this->sqlexe->value(2).toString());
+            count = this->HashSecretkey->DecryptCode(this->sqlexe->value(3).toString());
+
+            arg<<menu<<Status<<count;
+
             ret.insert(this->sqlexe->value(0).toInt(),arg);
         }
 

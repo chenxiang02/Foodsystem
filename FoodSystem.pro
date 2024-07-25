@@ -1,4 +1,4 @@
-QT += quick sql network quickcontrols2
+QT += quick sql network quickcontrols2 serialport
 
 CONFIG += c++11
 
@@ -34,7 +34,10 @@ include(./core/core.pri)
 include(./systemlog/systemLog.pri)
 #通讯模块
 include(./network/network.pri)
-
+#默认配置模块
+include(./defaultconfig/defaultconfig.pri)
+#资源池
+include(./sourcepool/sourcepool.pri)
 
 
 # Default rules for deployment.

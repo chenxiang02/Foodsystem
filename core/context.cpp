@@ -1,5 +1,6 @@
 #include "context.h"
-
+#include <QPair>
+#include <QMap>
 
 Context::Context(SqlSystem * DefineOperation,QObject *parent):QObject(parent),DefineOperate(DefineOperation)
 {
@@ -39,10 +40,7 @@ bool Context::applyUpdateData(const int RightUpdate, const QStringList UpdateInf
 
 void Context::setMethod(QString className)
 {
-    if(this->DefineOperate)
-    {
-       delete this->DefineOperate;
-    }
+    qDebug()<<Q_FUNC_INFO<<className<<"已完成赋值";
     if(className == "User")
     {
         this->DefineOperate = new User;
@@ -55,4 +53,35 @@ void Context::setMethod(QString className)
     {
         this->DefineOperate = new Account;
     }
+}
+
+int Context::loginVerity(QStringList info)
+{
+    qDebug()<<Q_FUNC_INFO;
+    QString account= info.at(1),pas=info.at(2);
+    QMap<int,QStringList> arg = this->applyFindData(1,info);
+
+    QList<int> argIndex = arg.keys();
+
+    QStringList userValue;
+    QString arg1,arg2,right;
+
+    for(int i = 0;i < argIndex.size();i++)
+    {
+       userValue =  arg[argIndex.at(i)];
+       arg1 = userValue.at(0);
+       arg2 = userValue.at(1);
+       right = userValue.at(2);
+
+       if(arg1 == account && arg2 == pas)//符合条件则返回权限
+           return right.toInt();
+
+    }
+
+    return -1;
+}
+
+void Context::clearSqlObject()
+{
+    delete this->DefineOperate;
 }

@@ -29,10 +29,12 @@ User::~User()
 
 void User::SqlInit()
 {
-    this->ConnectSql = QSqlDatabase::addDatabase("QSQLITE");
+   if(QSqlDatabase::contains("qt_sql_default_connection"))//如果有默认连接
+       this->ConnectSql = QSqlDatabase::database("qt_sql_default_connection");
+   else
+       this->ConnectSql = QSqlDatabase::addDatabase("QSQLITE");
 
-    this->ConnectSql.setDatabaseName(this->sqlPath->path()+"FoodDate.db");
-//    this->ConnectSql.setDatabaseName("FoodDate.db");
+    this->ConnectSql.setDatabaseName("FoodDate.db");
 
     this->ConnectSql.open();
 
@@ -78,9 +80,6 @@ bool User::InsertData(const int RightInsert, const QStringList InsertInfo) //过
     {
         QString userName=InsertInfo.at(0),password=InsertInfo.at(1),role=InsertInfo.at(2);
 
-        this->sqlexe->prepare("INSERT INFO users(username,password,role)"
-                              " VALUES (':username',':password',':role');");
-
         //加密数据
         QString EncryptUserName = this->HashSecretkey->EncryptCode(userName);
 
@@ -88,13 +87,8 @@ bool User::InsertData(const int RightInsert, const QStringList InsertInfo) //过
 
         QString EncryptRole = this->HashSecretkey->EncryptCode(role);
 
-        //绑定
-        this->sqlexe->bindValue(":username",EncryptUserName);
-        this->sqlexe->bindValue(":password",EncryptPassWord);
-        this->sqlexe->bindValue(":role",EncryptRole);
-
-
-        bool ret = this->sqlexe->exec();
+        bool ret = this->sqlexe->exec("INSERT INTO users(username,password,role)"
+                                      " VALUES ('"+EncryptUserName+"','"+EncryptPassWord+"','"+EncryptRole+"');");
 
         this->sqlexe->clear();
 
@@ -155,11 +149,9 @@ bool User::DeleteData(const int RightDelete, const QStringList DeleteInfo)
 
     if(RightDelete == EmptyDelete)//清空所有非特权用户数据
     {
-        QString execStatement ="DELETE FROM users WHERE role = ':Right';";
-        this->sqlexe->prepare(execStatement);
         QString RightUser = this->HashSecretkey->EncryptCode(QString::number(NormalUser));
 
-        this->sqlexe->bindValue(":Right",RightUser);
+        this->sqlexe->prepare("DELETE FROM users WHERE role = '"+RightUser+"';");
 
         bool ret = this->sqlexe->exec();
 
@@ -178,13 +170,12 @@ bool User::DeleteData(const int RightDelete, const QStringList DeleteInfo)
     {
         QString ColumnName = DeleteInfo.at(0),deleteValue = DeleteInfo.at(1);
 
-        this->sqlexe->prepare("DELETE FROM users WHERE :ColumnName = ':DeleteValue'"
-                              " AND role == '0';");
-
         QString EncryptDeleteValue = this->HashSecretkey->EncryptCode(deleteValue);
 
+        this->sqlexe->prepare("DELETE FROM users WHERE :ColumnName = '"+EncryptDeleteValue+"'"
+                              " AND role == '0';");
+
         this->sqlexe->bindValue(":ColumnName",ColumnName);
-        this->sqlexe->bindValue(":DeleteValue",EncryptDeleteValue);
 
         bool ret = this->sqlexe->exec();
 
@@ -225,18 +216,18 @@ bool User::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
          QString AppointName = UpdateInfo.at(0),AppointValue = UpdateInfo.at(1),
                  ColumnName = UpdateInfo.at(2),UpdateValue = UpdateInfo.at(3);
 
-         this->sqlexe->prepare("UPDATE users SET :AppointName = ':AppointValue'"
-                               " WHERE :Column = ':UpdateValue'");
+
 
          //加密
          QString EncryptAppointValue = this->HashSecretkey->EncryptCode(AppointValue);
 
          QString EncryptUpdateValue = this->HashSecretkey->EncryptCode(UpdateValue);
 
+         this->sqlexe->prepare("UPDATE users SET :AppointName = '"+EncryptAppointValue+"'"
+                               " WHERE :Column = '"+EncryptUpdateValue+"'");
+
          this->sqlexe->bindValue(":AppointName",AppointName);
-         this->sqlexe->bindValue(":AppointValue",EncryptAppointValue);
          this->sqlexe->bindValue(":Column",ColumnName);
-         this->sqlexe->bindValue(":UpdateValue",EncryptUpdateValue);
 
          bool ret = this->sqlexe->exec();
 
@@ -259,11 +250,6 @@ bool User::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
                  UpdateThreeC = UpdateInfo.at(6),UpdateThree = UpdateInfo.at(7),
                  FindName = UpdateInfo.at(0),FindValue = UpdateInfo.at(1);
 
-
-         this->sqlexe->prepare("UPDATE users SET :UpdateOne = ':UpdateOneValue',"
-                               ":UpdateTwo = ':UpdateTwoValue',"
-                               ":UpdateThree = ':UpdateThreeValue' WHERE :FindName = ':FindValue';");
-
          //加密
          QString EncryptUpdateOne = this->HashSecretkey->EncryptCode(UpdateOne);
 
@@ -273,14 +259,14 @@ bool User::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
 
          QString EncryptFindValue = this->HashSecretkey->EncryptCode(FindValue);
 
+         this->sqlexe->prepare("UPDATE users SET :UpdateOne = '"+EncryptUpdateOne+"',"
+                               ":UpdateTwo = '"+EncryptUpdateTwo+"',"
+                               ":UpdateThree = '"+EncryptUpdateThree+"' WHERE :FindName = '"+EncryptFindValue+"';");
+
          this->sqlexe->bindValue(":UpdateOne",UpdateOneC);
-         this->sqlexe->bindValue(":UpdateOneValue",EncryptUpdateOne);
          this->sqlexe->bindValue(":UpdateTwo",UpdateTwoC);
-         this->sqlexe->bindValue(":UpdateTwoValue",EncryptUpdateTwo);
          this->sqlexe->bindValue(":UpdateThree",UpdateThreeC);
-         this->sqlexe->bindValue(":UpdateThreeValue",EncryptUpdateThree);
          this->sqlexe->bindValue(":FindName",FindName);
-         this->sqlexe->bindValue(":FindValue",EncryptFindValue);
 
          bool ret = this->sqlexe->exec();
 
@@ -314,16 +300,12 @@ QMap<int,QStringList> User::FindData(const int RightFind, const QStringList Find
     if(RightFind == AppointFind)
     {
         QString IndexName = FindInfo.at(0),IndexValue = FindInfo.at(1);
-        this->sqlexe->prepare("SELECT * FROM users WHERE :Column = ':Value' AND role != '1';");
 
         QString EncryptIndexValue = this->HashSecretkey->EncryptCode(IndexValue);
 
-        this->sqlexe->bindValue(":Column",IndexName);
-        this->sqlexe->bindValue(":Value",EncryptIndexValue);
+        bool status = this->sqlexe->exec("select * from users where "+IndexName+" = '"+EncryptIndexValue+"';");
 
-        bool status = this->sqlexe->exec();
-
-        if(!status)
+        if(!status)//检查是否执行成功
         {
             qDebug()<<Q_FUNC_INFO<<"查询执行失败";
             printError.printLog("users用户表查询失败");
@@ -366,9 +348,14 @@ QMap<int,QStringList> User::FindData(const int RightFind, const QStringList Find
         while(this->sqlexe->next())//将查询结果存储 并返回
         {
             QStringList arg;//申请栈空间比放在外面申请清除速度要快(实际运行可能会有查询内容过多而造成效率问题,后期要考虑分库分表,redis缓存)
-            arg<<this->sqlexe->value(1).toString();
-            arg<<this->sqlexe->value(2).toString();
-            arg<<this->sqlexe->value(3).toString();
+            QString username,password,role;
+
+            username = this->HashSecretkey->DecryptCode(this->sqlexe->value(1).toString());
+            password = this->HashSecretkey->DecryptCode(this->sqlexe->value(2).toString());
+            role = this->HashSecretkey->DecryptCode(this->sqlexe->value(3).toString());
+
+            arg<<username<<password<<role;
+
             ret.insert(this->sqlexe->value(0).toInt(),arg);
         }
 

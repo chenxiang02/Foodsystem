@@ -18,6 +18,12 @@ public:
         Full//商品有余
     };
 
+    enum FoodType{
+        Soup = 0,
+        Meat,
+        Vegetable
+    };
+
     void SqlInit() override;//初始化Sql
 
     QString getSpecificClassName() override;

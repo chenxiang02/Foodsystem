@@ -52,6 +52,7 @@ bool PowerControl::MachineSleep(time_s Sleep_Sec)
         BoolReturnValue ret = system("");
     }
 #endif
+    return false;
 }
 
 bool PowerControl::MachineReboot(time_s Reboot_Sec)

@@ -1,7 +1,14 @@
 #include "register.h"
 
+#include "core/food.h"
+
 #include "core/MachineControl.h"
 #include "core/context.h"
+
+#include "defaultconfig/rightconfig.h"
+#include "defaultconfig/workconfig.h"
+
+#include "network/CirThread.h"
 
 void Register::registerClass(){
     //注意规范：核心类注入处
@@ -9,7 +16,27 @@ void Register::registerClass(){
     //注册类型
     qRegisterMetaType<QMap<int,QStringList>>("QMap<int,QStringList>");
 
+    //配置文件读写
+    qmlRegisterType<RightConfig>("Config.Right",1,0,"ConfigRight");
+    qmlRegisterType<WorkConfig>("Config.Work",1,0,"Work");
+
     //核心类实现后请在此处注入
      qmlRegisterType<MachineControl>("Core.MachineControl", 1, 0, "MachineControl");//机器控制
-     qmlRegisterUncreatableType<Context>("Core.Context", 1, 0, "Context","请务实例化此对象");//sql执行
+     qmlRegisterType<Context>("Core.Context", 1, 0, "Context");//sql执行
+//     qmlRegisterType<CirThread>("Core.CirThread", 1, 0, "CirThread");
+}
+
+
+#include "network/CirThread.h"
+
+void Register::regiseterServe()//服务注入
+{
+   CirThread* d = new CirThread;
+   d->run();
+
+}
+
+void Register::registerSourcePool()
+{
+
 }
