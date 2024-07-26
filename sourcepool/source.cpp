@@ -61,7 +61,7 @@ void Source::writeMenuContext(QString date)
 
     char * memoryDate = static_cast<char *>(this->memory->data());
 
-    strcpy(memoryDate,date.toUtf8());//将信息写入内存.
+    strcpy(memoryDate,date.toUtf8().data());//将信息写入内存.
 
     this->memory->detach();//脱离共享空间
 

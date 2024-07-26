@@ -3,8 +3,8 @@
 
 #include <QThread>
 #include <QObject>
-#include "sourcepool/sourceQueue.h"
 #include "TcpServe.h"
+#include "sourcepool/sourceQueue.h"
 
 extern "C"
 {
@@ -27,12 +27,11 @@ public:
 public slots:
     void dataReceive(QTcpSocket * socket,QString Data);//数据
     void sqlFind(QTcpSocket * socket,QString Data);//sql查询
-
     void run() override;
 
 private:
     TcpServe * serve;
-    SourceQueue * storage;
+    SourceQueue * queue;
 };
 
 #endif

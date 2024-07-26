@@ -5,16 +5,18 @@
 #include <QStringList>
 #include <QObject>
 #include <QDebug>
+#include <iostream>
+
+using namespace std;
 
 extern "C"
 {
+    #include <stdio.h>
     #include <string.h>
     #include <sys/types.h>
     #include <sys/ipc.h>
     #include <sys/msg.h>
 }
-
-
 
 enum MessageType{
     MenuList = 0,
@@ -22,8 +24,8 @@ enum MessageType{
 
 typedef struct QueueStruct
 {
-    int type;
-    char date[2048];
+    long type;//必须要带的索引 具体可参考ipc文档
+    char date[4096];
 }QueueInfomation;
 
 #define MSGLEN sizeof(QueueInfomation)
@@ -41,11 +43,11 @@ public:
 
     void DestroyMsg();
 
-//    static int getIndex();
-//    static void setIndex();
+    int getIndex();
+    void setIndex(int value);
 
 private:
-    static int index;//全局索引
+    long index;//全局索引
     key_t key;//消息队列键值
     int msgid;//消息队列操作符
 };

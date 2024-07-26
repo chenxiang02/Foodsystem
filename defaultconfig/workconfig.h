@@ -5,8 +5,9 @@
 #include <QSettings>
 #include <QObject>
 #include <QDateTime>
-#include <QTimer>
 #include "sourcepool/sourceQueue.h"
+#include <QTimer>
+
 
 class WorkConfig:public QObject
 {
@@ -74,6 +75,8 @@ signals:
     void orderCancelChanged();
     void allOrderChanged();
 
+public:
+    void handlerLoacl(QString data);
 
 private:
     QString NowDate;
@@ -89,8 +92,8 @@ private:
     QString AllOrder;
 
     QSettings * workConfig;
-    SourceQueue * source;
-    QTimer * time;
+    SourceQueue * queue;
+    QTimer *time;
 };
 
 #endif

@@ -2,17 +2,20 @@
 
 WorkConfig::WorkConfig(QObject * parent):QObject(parent)
 {
-    this->workConfig = new QSettings("work.ini",QSettings::IniFormat);
-    this->source = new SourceQueue;
+    this->workConfig = new QSettings("Work.ini",QSettings::IniFormat);
 
-    this->time = new QTimer(this);
+    this->queue = new SourceQueue;
+
+    this->time = new QTimer(this);//绑定对象树
 
     this->time->setInterval(2000);
 
+    this->time->start();//开启定时器
+
     connect(time,&QTimer::timeout,this,[&]{
-        QString date = this->source->receiveMsg();
-        qDebug()<<"---"<<date;
+        QString data = this->queue->receiveMsg();
     });
+
     qDebug()<<Q_FUNC_INFO<<"WorkConfig类构造";
 }
 
@@ -141,4 +144,9 @@ void WorkConfig::setAllOrder(const QString &value)
 {
     AllOrder = value;
     emit allOrderChanged();
+}
+
+void WorkConfig::handlerLoacl(QString data)
+{
+    qDebug()<<"---"<<data;
 }

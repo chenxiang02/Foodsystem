@@ -1,7 +1,6 @@
 #include "CirThread.h"
 #include "core/food.h"
 
-
 namespace EventFunction {
 
     #define SQL_Find_Protocol_Begin 10101111 //默认定义协议头
@@ -75,9 +74,11 @@ namespace EventFunction {
 
 CirThread::CirThread()
 {
+     this->queue = new SourceQueue;
+
      this->serve = new TcpServe(this);
      this->serve->listen(QHostAddress("127.0.0.1"),6666);
-     this->storage = new SourceQueue;//构建消息队列
+
      qDebug()<<Q_FUNC_INFO<<"CirThread类构造";
 }
 
@@ -92,8 +93,7 @@ void CirThread::dataReceive(QTcpSocket *socket, QString Data)
     if(Data.contains("MenuList"))
     {
         Data.remove(Data.length() - 8,8);
-        qDebug()<<"----"<<Data;
-        this->storage->sendMsg(Data);
+        this->queue->sendMsg(Data);
     }
 }
 
