@@ -4,7 +4,7 @@ TcpServe::TcpServe(QObject *parent) :QTcpServer(parent)
 {
     this->time = new QTimer(this);
 
-    this->time->setInterval(50000);
+    this->time->setInterval(60 * 1000);//60秒一个轮回
 
     this->time->start();
 
@@ -27,7 +27,7 @@ void TcpServe::incomingConnection(qintptr handle)
     connect(ClientSocket,&QTcpSocket::readyRead,this,&TcpServe::readClientData);
     connect(ClientSocket,&QTcpSocket::disconnected,this,&TcpServe::clientDisconnected);
     ClientSockets.append(ClientSocket);
-    HeartId.append(0);
+    HeartId.append(1);
 }
 
 void TcpServe::clientDisconnected()

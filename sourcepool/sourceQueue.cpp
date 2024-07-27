@@ -1,5 +1,7 @@
 #include "sourceQueue.h"
 
+int SourceQueue::count = 0;
+
 SourceQueue::SourceQueue(QObject *parent)
     : QObject(parent)
 {
@@ -38,6 +40,10 @@ bool SourceQueue::sendMsg(QString data)
     msg.date[length + 1] = '\0';//结尾标识符
 
     ++index;
+
+    int recored = getCount() + 1;
+    setCount(recored);
+
     return msgsnd(this->msgid,&msg,length,0);
 
 }
@@ -51,6 +57,8 @@ QString SourceQueue::receiveMsg()
        return "null";
    }
    QString date = QString::fromUtf8(msg.date);
+   int recored = getCount() - 1;
+   setCount(recored);
    return date;
 
 }
@@ -63,4 +71,14 @@ void SourceQueue::DestroyMsg()
 void SourceQueue::setIndex(int value)
 {
     index = value;
+}
+
+int SourceQueue::getCount()
+{
+    return count;
+}
+
+void SourceQueue::setCount(int value)
+{
+    count = value;
 }

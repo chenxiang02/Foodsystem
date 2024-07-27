@@ -46,7 +46,15 @@ public:
     int getIndex();
     void setIndex(int value);
 
+
+public:
+    static int count;
+
+    static int getCount();
+    static void setCount(int value);
+
 private:
+
     long index;//全局索引
     key_t key;//消息队列键值
     int msgid;//消息队列操作符

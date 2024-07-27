@@ -76,7 +76,7 @@ signals:
     void allOrderChanged();
 
 public:
-    void handlerLoacl(QString data);
+    void handlerData();
 
 private:
     QString NowDate;

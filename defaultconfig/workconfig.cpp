@@ -1,5 +1,28 @@
 #include "workconfig.h"
 
+
+namespace WorkPack{
+    QStringList handlerMenuList(QString Data)
+    {
+        int length = Data.length();
+        QStringList arg;
+        QString strMid;
+
+        for(int i = 0;i < length;i++)
+        {
+            if(Data.at(i)=='|' || Data.at(i) == '+' || Data.at(i) == '/')
+            {
+                arg<<strMid;
+                strMid.clear();
+                continue;
+            }
+            strMid.append(Data.at(i));
+        }
+        qDebug()<<arg;
+        return arg;
+    }
+};
+
 WorkConfig::WorkConfig(QObject * parent):QObject(parent)
 {
     this->workConfig = new QSettings("Work.ini",QSettings::IniFormat);
@@ -8,13 +31,11 @@ WorkConfig::WorkConfig(QObject * parent):QObject(parent)
 
     this->time = new QTimer(this);//绑定对象树
 
-    this->time->setInterval(2000);
+    this->time->setInterval(1000);
 
     this->time->start();//开启定时器
 
-    connect(time,&QTimer::timeout,this,[&]{
-        QString data = this->queue->receiveMsg();
-    });
+    connect(time,&QTimer::timeout,this,&WorkConfig::handlerData);
 
     qDebug()<<Q_FUNC_INFO<<"WorkConfig类构造";
 }
@@ -146,7 +167,22 @@ void WorkConfig::setAllOrder(const QString &value)
     emit allOrderChanged();
 }
 
-void WorkConfig::handlerLoacl(QString data)
+void WorkConfig::handlerData()
 {
-    qDebug()<<"---"<<data;
+    QString Data;
+    if(SourceQueue::getCount() >0)//有数据才允许去读
+        Data = this->queue->receiveMsg();
+    else
+    {
+        qDebug()<<"没有数据";
+        return;
+    }
+    QStringList menuList = WorkPack::handlerMenuList(Data);
+
+    int turnover = getTurnOver().toInt() + QString(menuList.at(menuList.size() - 1)).toInt();
+    setTurnOver(QString::number(turnover));
+
+    int order = getOrderCount().toInt() + 1;
+    setOrderCount(QString::number(order));
 }
+

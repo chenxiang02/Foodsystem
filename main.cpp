@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
     Register::registerClass();//调用注册类方法
 
-    Register::regiseterServe();//注册服务器(尽量不使用在同一线程或进程下 避免阻塞)
+    Register::regiseterServe();//注册服务器(尽量不使用在同一线程或进程下)
 
     //设置默认风格
 //    QQuickStyle::setStyle("Fusion");

@@ -35,8 +35,3 @@ void Register::regiseterServe()//服务注入
    d->run();
 
 }
-
-void Register::registerSourcePool()
-{
-
-}

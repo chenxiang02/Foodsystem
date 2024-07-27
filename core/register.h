@@ -16,7 +16,9 @@ public:
     static void regiseterServe();
 
     //资源池进行内容读取 可以考虑用redis
-    static void registerSourcePool();
+    static void defineCount();
+
+
 };
 
 #endif
