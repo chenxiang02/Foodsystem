@@ -4,12 +4,14 @@
 
 Context::Context(SqlSystem * DefineOperation,QObject *parent):QObject(parent),DefineOperate(DefineOperation)
 {
+    isDelete = false;
     qDebug()<<Q_FUNC_INFO<<"Context类操作,带传参构造";
     qDebug()<<Q_FUNC_INFO<<this->DefineOperate->getSpecificClassName()+"操作";
 }
 
 Context::Context(QObject *parent):QObject(parent)
 {
+    isDelete = false;
     qDebug()<<Q_FUNC_INFO<<"Context类操作,无传参构造";
 }
 
@@ -41,6 +43,13 @@ bool Context::applyUpdateData(const int RightUpdate, const QStringList UpdateInf
 void Context::setMethod(QString className)
 {
     qDebug()<<Q_FUNC_INFO<<className<<"已完成赋值";
+
+    if(isDelete)
+    {
+        delete  this->DefineOperate;
+        isDelete = false;
+    }
+
     if(className == "User")
     {
         this->DefineOperate = new User;
@@ -53,6 +62,7 @@ void Context::setMethod(QString className)
     {
         this->DefineOperate = new Account;
     }
+    this->isDelete = true;
 }
 
 int Context::loginVerity(QStringList info)
@@ -84,4 +94,9 @@ int Context::loginVerity(QStringList info)
 void Context::clearSqlObject()
 {
     delete this->DefineOperate;
+}
+
+QSqlQuery *Context::applySqlOperator()//非必要请勿使用此方法被
+{
+    return this->DefineOperate->getSqlOperater();
 }

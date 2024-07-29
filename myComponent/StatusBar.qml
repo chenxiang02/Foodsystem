@@ -43,34 +43,34 @@ Item{
         height: parent.height / 5 * 4 - 20
         CustomItem{
             id:item1
-            width: parent.width / 4 - 5
+            width: parent.width / 4 - 10
             height:parent.height
             anchors.left: parent.left
-            anchors.leftMargin: 5
+            anchors.leftMargin: 8
             backgroundColor.color:"#FFFD99"
         }
         CustomItem{
             id:item2
-            width: parent.width / 4 - 5
+            width: parent.width / 4 - 10
             height:parent.height
             anchors.left: item1.right
-            anchors.leftMargin: 5
+            anchors.leftMargin: 8
             backgroundColor.color:"#FFFD99"
         }
         CustomItem{
             id:item3
-            width: parent.width / 4 - 5
+            width: parent.width / 4 - 10
             height:parent.height
             anchors.left: item2.right
-            anchors.leftMargin: 5
+            anchors.leftMargin: 8
             backgroundColor.color:"#FFFD99"
         }
         CustomItem{
             id:item4
-            width: parent.width / 4 - 5
+            width: parent.width / 4 - 10
             height:parent.height
             anchors.left: item3.right
-            anchors.leftMargin: 5
+            anchors.leftMargin: 8
             backgroundColor.color:"#FFFD99"
         }
     }

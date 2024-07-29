@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QDateTime>
 #include "sourcepool/sourceQueue.h"
+#include "core/context.h"
 #include <QTimer>
 
 
@@ -26,10 +27,16 @@ class WorkConfig:public QObject
     Q_PROPERTY(QString OrderCancel READ getOrderCancel WRITE setOrderCancel NOTIFY orderCancelChanged)
     Q_PROPERTY(QString AllOrder READ getAllOrder WRITE setAllOrder NOTIFY allOrderChanged)
 
+    //第三排动态数据
+    Q_PROPERTY(QString startSell READ getStartSell WRITE setStartSell NOTIFY startSellChanged)
+    Q_PROPERTY(QString stopSell READ getStopSell WRITE setStopSell NOTIFY stopSellChanged)
+
 
 public:
     WorkConfig(QObject * parent = nullptr);
     ~WorkConfig();
+
+    void handlerData();
 
     //时间比对函数
     QString getNowDate() const;
@@ -62,6 +69,14 @@ public:
     QString getAllOrder() const;
     void setAllOrder(const QString &value);
 
+    QString getStartSell() const;
+    void setStartSell(const QString &value);
+
+    QString getStopSell() const;
+    void setStopSell(const QString &value);
+
+    static QList<QStringList> menuList;
+
 signals:
     void nowDateChanged();
 
@@ -75,25 +90,34 @@ signals:
     void orderCancelChanged();
     void allOrderChanged();
 
-public:
-    void handlerData();
+    void startSellChanged();
+    void stopSellChanged();
 
 private:
     QString NowDate;
 
+    //第一排数据
     QString TurnOver;
     QString OrderCount;
     QString OrderComplete;
     QString AveragePrice;
 
+    //第二排数据
     QString ToBeComplete;
     QString FinishOrder;
     QString OrderCancel;
     QString AllOrder;
 
+    //第三排数据
+    QString startSell;
+    QString stopSell;
+
+    //配置操作符
     QSettings * workConfig;
     SourceQueue * queue;
     QTimer *time;
+
+    Context * sql;
 };
 
 #endif

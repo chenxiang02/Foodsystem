@@ -1,5 +1,6 @@
 #include "workconfig.h"
 
+QList<QStringList> WorkConfig::menuList;//全局共享数据
 
 namespace WorkPack{
     QStringList handlerMenuList(QString Data)
@@ -18,7 +19,6 @@ namespace WorkPack{
             }
             strMid.append(Data.at(i));
         }
-        qDebug()<<arg;
         return arg;
     }
 };
@@ -29,9 +29,31 @@ WorkConfig::WorkConfig(QObject * parent):QObject(parent)
 
     this->queue = new SourceQueue;
 
+    this->sql = new Context;
+
+    this->sql->setMethod("Food");
+
+    CodeHandler a;
+
+    this->sql->applySqlOperator()->exec("select count(*) from food where status = '"+a.EncryptCode("0")+"';");
+
+    this->sql->applySqlOperator()->next();
+
+    setStartSell(this->sql->applySqlOperator()->value(0).toString());
+
+    this->sql->applySqlOperator()->clear();
+
+    this->sql->applySqlOperator()->exec("select count(*) from food where status = '"+a.EncryptCode("1")+"';");
+
+    this->sql->applySqlOperator()->next();
+
+    setStopSell(this->sql->applySqlOperator()->value(0).toString());
+
+    this->sql->setMethod("Account");
+
     this->time = new QTimer(this);//绑定对象树
 
-    this->time->setInterval(1000);
+    this->time->setInterval(500);
 
     this->time->start();//开启定时器
 
@@ -173,10 +195,8 @@ void WorkConfig::handlerData()
     if(SourceQueue::getCount() >0)//有数据才允许去读
         Data = this->queue->receiveMsg();
     else
-    {
-        qDebug()<<"没有数据";
         return;
-    }
+
     QStringList menuList = WorkPack::handlerMenuList(Data);
 
     int turnover = getTurnOver().toInt() + QString(menuList.at(menuList.size() - 1)).toInt();
@@ -184,5 +204,45 @@ void WorkConfig::handlerData()
 
     int order = getOrderCount().toInt() + 1;
     setOrderCount(QString::number(order));
+
+    int tocomplete = getToBeComplete().toInt() + 1;
+    setToBeComplete(QString::number(tocomplete));
+
+    int all = getAllOrder().toInt() + 1;
+    setAllOrder(QString::number(all));
+
+    double completeRate = (getAllOrder().toDouble() - getOrderCancel().toDouble()) / getAllOrder().toDouble() ;
+    setOrderComplete(QString::number(completeRate * 100));
+
+    double averageValue = getTurnOver().toDouble() / getAllOrder().toDouble();
+    setAveragePrice(QString::number(averageValue));
+
+    QStringList arg;
+    int removeLength = Data.lastIndexOf("/");
+    Data.remove(removeLength,Data.length() - removeLength);
+    arg<<Data<<"0"<<menuList.at(menuList.size()-1);
+    WorkConfig::menuList.push_back(arg);
+    sql->applyInsert(1,arg);
 }
 
+QString WorkConfig::getStartSell() const
+{
+    return startSell;
+}
+
+void WorkConfig::setStartSell(const QString &value)
+{
+    startSell = value;
+    emit startSellChanged();
+}
+
+QString WorkConfig::getStopSell() const
+{
+    return stopSell;
+}
+
+void WorkConfig::setStopSell(const QString &value)
+{
+    stopSell = value;
+    emit stopSellChanged();
+}

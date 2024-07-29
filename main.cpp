@@ -1,4 +1,5 @@
-#include <QGuiApplication>
+//#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QCryptographicHash>
 #include <QQuickStyle>
@@ -13,7 +14,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
 
@@ -25,8 +26,8 @@ int main(int argc, char *argv[])
 //    QQuickStyle::setStyle("Fusion");
 
     //错误定位
-//    QBreakpadHandler a;
-//    a.setDumpPath("crash");
+    QBreakpadHandler a;
+    a.setDumpPath("crash");
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

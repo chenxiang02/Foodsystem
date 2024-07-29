@@ -7,16 +7,9 @@ import Config.Work 1.0
 Item{
     id:propertyTop
 //    clip: true //设置滑动效果
-
     Work{
         id:workInstantiation
     }
-
-//    Image {
-//        anchors.fill: parent
-//        source: "qrc:/icon/lake.jpg"
-//        fillMode: Image.PreserveAspectCrop
-//    }
 
     property var date:workInstantiation.NowDate
 
@@ -30,16 +23,21 @@ Item{
     property var cancelOrder: workInstantiation.OrderCancel
     property var allOrder: workInstantiation.AllOrder
 
+    property var startBuy: workInstantiation.startSell
+    property var stopBuy: workInstantiation.stopSell
+
 
     Column{
-        anchors.fill: parent
-        spacing: 5
-
+        spacing: 6
+        anchors.fill:parent
         CustomControl.StatusBar{
             implicitWidth: parent.width
-            implicitHeight: parent.height / 3
+            implicitHeight: parent.height / 3 - 8
 
-            barTopBtn.text:qsTr("详细数据 >")
+//            barTopBtn.text:qsTr("详细数据 >")
+//            barTopBtn.onClicked: {
+
+//            }
 
             barTopText.rowTextOne.text:qsTr("今日数据")
             barTopText.rowTextTwo.text: qsTr(date)
@@ -61,7 +59,7 @@ Item{
 
         CustomControl.StatusBar{
             implicitWidth: parent.width
-            implicitHeight: parent.height / 3
+            implicitHeight: parent.height / 3 - 8
 
             barTopText.rowTextOne.text: qsTr("订单管理")
             barTopText.rowTextTwo.text: qsTr(date)
@@ -83,18 +81,18 @@ Item{
 
         CustomControl.StatusBar{
             implicitWidth: parent.width
-            implicitHeight: parent.height / 3
+            implicitHeight: parent.height / 3 - 8
 
             barTopText.rowTextOne.text: qsTr("菜品总揽")
-            barTopText.rowTextTwo.text: qsTr("")
+            barTopText.rowTextTwo.text: qsTr(date)
             barTopText.rowTextOne.font.bold: true
             barTopText.rowTextOne.font.pixelSize: 20
 
             batBottomItem1.columnTextOne.text: qsTr("已启售")
-            batBottomItem1.columnTextTwo.text: qsTr(tobeComplete)
+            batBottomItem1.columnTextTwo.text: qsTr(startBuy)
 
             batBottomItem2.columnTextOne.text: qsTr("已停售")
-            batBottomItem2.columnTextTwo.text: qsTr(finishiOrder)
+            batBottomItem2.columnTextTwo.text: qsTr(stopBuy)
 
             batBottomItem3.columnTextOne.text: qsTr("套餐启售")
             batBottomItem3.columnTextTwo.text: qsTr(cancelOrder)

@@ -7,6 +7,8 @@
 
 #include "defaultconfig/rightconfig.h"
 #include "defaultconfig/workconfig.h"
+#include "defaultconfig/MenuDetail.h"
+#include "defaultconfig/DataWidget.h"
 
 #include "network/CirThread.h"
 
@@ -19,6 +21,8 @@ void Register::registerClass(){
     //配置文件读写
     qmlRegisterType<RightConfig>("Config.Right",1,0,"ConfigRight");
     qmlRegisterType<WorkConfig>("Config.Work",1,0,"Work");
+    qmlRegisterType<MenuDetail>("Config.MenuDetail",1,0,"MenuDetail");
+    qmlRegisterType<DataWidget>("Config.DataWidget",1,0,"DataWidget");
 
     //核心类实现后请在此处注入
      qmlRegisterType<MachineControl>("Core.MachineControl", 1, 0, "MachineControl");//机器控制

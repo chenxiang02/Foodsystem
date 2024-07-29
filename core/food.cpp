@@ -62,6 +62,11 @@ QString Food::getSpecificClassName()
     return "Food";
 }
 
+QSqlQuery *Food::getSqlOperater()
+{
+    return this->sqlexe;
+}
+
 bool Food::InsertData(const int RightInsert, const QStringList InsertInfo)
 {
     if(RightInsert <= IllegalityInsert || RightInsert >= MaxRightInsert) //非法操作

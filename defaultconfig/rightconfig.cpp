@@ -23,15 +23,18 @@ int RightConfig::getFlag() const
 void RightConfig::setFlag(int value)
 {
     this->flag = value;
+    if(value>=0)
+        emit btnNamesChanged();
     emit flagChanged();
 }
 
 QStringList RightConfig::getBtnNames() const
 {
     QString right;
-    right.append(QString::number(2));
+    right.append(QString::number(getFlag()));
     right.append("/");
-    return this->rightSet->value(right,"NULL").toStringList();
+    QStringList arg = this->rightSet->value(right,"NULL").toStringList();
+    return arg;
 }
 
 void RightConfig::setBtnNames(const QStringList &value)

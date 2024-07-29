@@ -3,6 +3,7 @@
 #include "SqlSystem.h"
 #include "CodeHandler.h"
 #include "systemlog/fault.h"
+#include <QDate>
 
 class Account : public SqlSystem
 {
@@ -24,6 +25,10 @@ public:
     bool DeleteData(const int RightDelete, const QStringList DeleteInfo) override;
 
     bool UpdateData(const int RightUpdate, const QStringList UpdateInfo) override;
+
+    QSqlQuery * getSqlOperater() override;
+
+    CodeHandler * getPasOperater();
 
     QMap<int,QStringList> FindData(const int RightFind, const QStringList FindInfo) override;
 

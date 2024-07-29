@@ -27,6 +27,10 @@ public:
 
     Q_INVOKABLE void clearSqlObject();
 
+    QSqlQuery * applySqlOperator();
+private:
+    bool isDelete;
+
 };
 
 #endif

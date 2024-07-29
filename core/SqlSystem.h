@@ -59,6 +59,8 @@ public:
     QMap<int,QStringList> virtual FindData(const int RightFind,const QStringList FindInfo)=0;//数据库查找信息接口
     bool virtual UpdateData(const int RightUpdate,const QStringList UpdateInfo)=0;//数据库更新接口
 
+    virtual QSqlQuery * getSqlOperater()=0;
+
 };
 
 #endif

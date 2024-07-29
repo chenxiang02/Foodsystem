@@ -1,8 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>interfacefunction/MainWidget.qml</file>
         <file>interfacefunction/LoginWidget.qml</file>
-        <file>interfacefunction/NetWork.qml</file>
         <file>icon/home.png</file>
         <file>myComponent/CustomButton.qml</file>
         <file>myComponent/Machine.qml</file>
@@ -14,5 +12,8 @@
         <file>myComponent/CustomItem.qml</file>
         <file>myComponent/StatusBar.qml</file>
         <file>icon/lake.jpg</file>
+        <file>myComponent/MenuDetail.qml</file>
+        <file>interfacefunction/DataWidget.qml</file>
+        <file>interfacefunction/ClassifyWidget.qml</file>
     </qresource>
 </RCC>

@@ -34,7 +34,8 @@ void Account::SqlInit()
     else
         this->ConnectSql = QSqlDatabase::addDatabase("QSQLITE");
 
-    this->ConnectSql.setDatabaseName(this->sqlPath->path()+"FoodDate.db");
+//    this->ConnectSql.setDatabaseName(this->sqlPath->path()+"FoodDate.db");//项目拷贝板子时候用
+    this->ConnectSql.setDatabaseName("FoodDate.db");
 
     this->ConnectSql.open();
 
@@ -45,12 +46,12 @@ void Account::SqlInit()
 
     this->sqlexe = new QSqlQuery(this->ConnectSql);
 
-    //用户表不存在则创建
+    //账户表不存在则创建
     this->sqlexe->exec("CREATE TABLE IF NOT EXISTS account("
                        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                       "menu TEXT NOT NULL UNIQUE,"
+                       "menu TEXT NOT NULL,"
                        "status TEXT NOT NULL,"
-                       "selltime TEXT NOT NULL"
+                       "selltime TEXT NOT NULL,"
                        "totalvalue TEXT NOT NULL"
                        ");");
 }
@@ -86,24 +87,17 @@ bool Account::InsertData(const int RightInsert, const QStringList InsertInfo)
 
         QString EncryptStatus = this->HashSecretkey->EncryptCode(Status);
 
-        QString EncryptCreateTime = this->HashSecretkey->EncryptCode(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:MM:ss"));
+        QString CreateTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:MM:ss");
 
         QString EncryptCount = this->HashSecretkey->EncryptCode(Count);
 
-        //绑定
-        this->sqlexe->bindValue(":menu",EncryptFoodName);
-        this->sqlexe->bindValue(":status",EncryptStatus);
-        this->sqlexe->bindValue(":selltime",EncryptCreateTime);
-        this->sqlexe->bindValue(":totalvalue",EncryptCount);
-
-        this->sqlexe->prepare("INSERT INFO account(menu,status,selltime,totalvalue)"
-                              " VALUES ('"+EncryptFoodName+"','"+EncryptStatus+"','"+EncryptCreateTime+"','"+EncryptCount+"');");
-
-        bool ret = this->sqlexe->exec();
-
+        bool ret = this->sqlexe->exec("INSERT INTO account(menu,status,selltime,totalvalue)"
+                                      " VALUES ('"+EncryptFoodName+"','"+EncryptStatus+
+                                      "','"+CreateTime+"','"+EncryptCount+"');");;
         if(!ret)
         {
             qDebug()<<Q_FUNC_INFO<<"插入执行失败";
+            qDebug()<<this->sqlexe->lastError().text();
             printError.printLog("account表行插入执行失败");
             return ret;
         }
@@ -292,6 +286,16 @@ bool Account::UpdateData(const int RightUpdate, const QStringList UpdateInfo)
     return false;
 }
 
+QSqlQuery *Account::getSqlOperater()
+{
+    return this->sqlexe;
+}
+
+CodeHandler *Account::getPasOperater()
+{
+    return this->HashSecretkey;
+}
+
 QMap<int,QStringList> Account::FindData(const int RightFind, const QStringList FindInfo)
 {
     QMap<int,QStringList> ret;
@@ -346,7 +350,7 @@ QMap<int,QStringList> Account::FindData(const int RightFind, const QStringList F
     }
     else if(RightFind == AllFind)
     {
-        this->sqlexe->prepare("SELECT * FROM food;");
+        this->sqlexe->prepare("SELECT * FROM account;");
 
         bool status = this->sqlexe->exec();
         if(!status)

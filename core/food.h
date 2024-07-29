@@ -28,6 +28,8 @@ public:
 
     QString getSpecificClassName() override;
 
+    QSqlQuery * getSqlOperater() override;
+
     bool InsertData(const int RightInsert, const QStringList InsertInfo) override;
 
     bool DeleteData(const int RightDelete, const QStringList DeleteInfo) override;

@@ -23,6 +23,8 @@ public:
 
     QString getSpecificClassName() override;
 
+    QSqlQuery * getSqlOperater() override;
+
     bool InsertData(const int RightInsert, const QStringList InsertInfo) override;
 
     bool DeleteData(const int RightDelete, const QStringList DeleteInfo) override;
@@ -30,6 +32,7 @@ public:
     bool UpdateData(const int RightUpdate, const QStringList UpdateInfo) override;
 
     QMap<int,QStringList> FindData(const int RightFind, const QStringList FindInfo) override;
+
 private:
     QSqlDatabase ConnectSql;//sql操作
 

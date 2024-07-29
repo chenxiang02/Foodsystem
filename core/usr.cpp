@@ -59,6 +59,11 @@ QString User::getSpecificClassName()
     return "User";
 }
 
+QSqlQuery *User::getSqlOperater()
+{
+    return this->sqlexe;
+}
+
 bool User::InsertData(const int RightInsert, const QStringList InsertInfo) //过多冗杂功能 后期优化可以考虑职责剥离
 {
     if(RightInsert <= IllegalityInsert || RightInsert >= MaxRightInsert) //非法操作

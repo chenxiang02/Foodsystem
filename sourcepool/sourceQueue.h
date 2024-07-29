@@ -46,7 +46,6 @@ public:
     int getIndex();
     void setIndex(int value);
 
-
 public:
     static int count;
 

@@ -2,8 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 Item{
-    Text{
+    Label{
+        text: qsTr("排序")
         anchors.centerIn: parent
-        text: qsTr("排序");
     }
 }
