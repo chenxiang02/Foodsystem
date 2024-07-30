@@ -32,7 +32,6 @@ Window {
     property var rightRegister:rightManager.flag
     property var btnName: rightManager.btnNames
 
-
     Loader{
            id:myLoader
            anchors.fill: parent// 弹出的界面都布满全局

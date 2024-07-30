@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QSettings>
+#include <QMutex>
 #include <QObject>
 #include <QDateTime>
 #include "sourcepool/sourceQueue.h"
@@ -75,7 +76,7 @@ public:
     QString getStopSell() const;
     void setStopSell(const QString &value);
 
-    static QList<QStringList> menuList;
+    static QStringList menuList;
 
 signals:
     void nowDateChanged();
@@ -118,6 +119,7 @@ private:
     QTimer *time;
 
     Context * sql;
+    QMutex * mutex;
 };
 
 #endif

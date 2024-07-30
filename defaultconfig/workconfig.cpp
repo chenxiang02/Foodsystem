@@ -1,6 +1,6 @@
 #include "workconfig.h"
 
-QList<QStringList> WorkConfig::menuList;//全局共享数据
+QStringList WorkConfig::menuList;//全局共享数据
 
 namespace WorkPack{
     QStringList handlerMenuList(QString Data)
@@ -56,6 +56,8 @@ WorkConfig::WorkConfig(QObject * parent):QObject(parent)
     this->time->setInterval(500);
 
     this->time->start();//开启定时器
+
+    this->mutex = new QMutex;
 
     connect(time,&QTimer::timeout,this,&WorkConfig::handlerData);
 
@@ -191,12 +193,14 @@ void WorkConfig::setAllOrder(const QString &value)
 
 void WorkConfig::handlerData()
 {
+    mutex->lock();
     QString Data;
     if(SourceQueue::getCount() >0)//有数据才允许去读
         Data = this->queue->receiveMsg();
-    else
+    else{
+        mutex->unlock();//如果没有数据 立马解锁
         return;
-
+    }
     QStringList menuList = WorkPack::handlerMenuList(Data);
 
     int turnover = getTurnOver().toInt() + QString(menuList.at(menuList.size() - 1)).toInt();
@@ -218,11 +222,20 @@ void WorkConfig::handlerData()
     setAveragePrice(QString::number(averageValue));
 
     QStringList arg;
+    QString date = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     int removeLength = Data.lastIndexOf("/");
     Data.remove(removeLength,Data.length() - removeLength);
-    arg<<Data<<"0"<<menuList.at(menuList.size()-1);
-    WorkConfig::menuList.push_back(arg);
+    arg<<Data<<"0"<<menuList.at(menuList.size()-1)<<date;
+    QStringList menu;
+
+    QDateTime receDate = QDateTime::fromString(date,"yyyy-MM-dd hh:mm:ss");
+    QString timeDate;
+    timeDate = timeDate.setNum(receDate.toTime_t());
+
+    menu<<timeDate<<date<<Data<<menuList.at(menuList.size()-1);
+    WorkConfig::menuList<<menu;
     sql->applyInsert(1,arg);
+    mutex->unlock();
 }
 
 QString WorkConfig::getStartSell() const

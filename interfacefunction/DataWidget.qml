@@ -32,6 +32,7 @@ Item{
             width: parent.width / 8
             height: parent.height / 2
             anchors.verticalCenter: parent.verticalCenter
+            focus: true
             text: qsTr("近三天")
             background: Rectangle{
                 color:threeDayBtn.focus ? "#FEBC04" : "white"

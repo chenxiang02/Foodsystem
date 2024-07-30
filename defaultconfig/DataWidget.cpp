@@ -22,9 +22,17 @@ QString DataWidget::DateMapping(int offset)
 int DataWidget::ceilNum(int value)
 {
     int i = 10;
-    while (i < value && i*10 < value)
+
+    while (i < value && i*10 < value)//获取alue最高位(例如获取千位万位等)
        i*=10;
-    return i*10;
+
+//以1.4倍指数增长
+//如(假设传进9999 只需要六次就能取得它更高的整数 指数选择越高循环查找次数越少)
+    while (i < value)
+        i*=1.4;
+
+    qDebug()<<"返回值"<<i;
+    return i;
 }
 
 void DataWidget::setChartUpdate(int offset)
@@ -48,7 +56,7 @@ void DataWidget::setChartUpdate(int offset)
     setXmax(pointReceive.size());
     setYmax(ceilNum(MaxValue));
     setPointValue(pointReceive);
-    qDebug()<<pointReceive;
+    qDebug()<<MaxValue;
 }
 
 QList<int> DataWidget::getPointValue() const

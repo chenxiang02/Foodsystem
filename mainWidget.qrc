@@ -15,5 +15,6 @@
         <file>myComponent/MenuDetail.qml</file>
         <file>interfacefunction/DataWidget.qml</file>
         <file>interfacefunction/ClassifyWidget.qml</file>
+        <file>myComponent/OrderItem.qml</file>
     </qresource>
 </RCC>

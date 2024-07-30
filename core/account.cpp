@@ -80,20 +80,18 @@ bool Account::InsertData(const int RightInsert, const QStringList InsertInfo)
 
     if(RightInsert == rowInsert)//这可以优化一下 难道表会固定5列数据吗 可以写出来更具有变化兼容性的插入
     {
-        QString menu=InsertInfo.at(0),Status=InsertInfo.at(1),Count=InsertInfo.at(2);
+        QString menu=InsertInfo.at(0),Status=InsertInfo.at(1),Count=InsertInfo.at(2),createTime=InsertInfo.at(3);
 
         //加密数据
         QString EncryptFoodName = this->HashSecretkey->EncryptCode(menu);
 
         QString EncryptStatus = this->HashSecretkey->EncryptCode(Status);
 
-        QString CreateTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:MM:ss");
-
         QString EncryptCount = this->HashSecretkey->EncryptCode(Count);
 
         bool ret = this->sqlexe->exec("INSERT INTO account(menu,status,selltime,totalvalue)"
                                       " VALUES ('"+EncryptFoodName+"','"+EncryptStatus+
-                                      "','"+CreateTime+"','"+EncryptCount+"');");;
+                                      "','"+createTime+"','"+EncryptCount+"');");;
         if(!ret)
         {
             qDebug()<<Q_FUNC_INFO<<"插入执行失败";
@@ -359,19 +357,22 @@ QMap<int,QStringList> Account::FindData(const int RightFind, const QStringList F
             printError.printLog("food用户表查询失败");
             return ret;
         }
-
-        QString menu,Status,count;
+        QStringList arg;//(后期要考虑分库分表,redis缓存)
+        QString menu,Status,selltime,totalvalue;
         while(this->sqlexe->next())//将查询结果存储 并返回
         {
-            QStringList arg;//申请栈空间比放在外面申请清除速度要快(实际运行可能会有查询内容过多而造成效率问题,后期要考虑分库分表,redis缓存)
+
 
             menu = this->HashSecretkey->DecryptCode(this->sqlexe->value(1).toString());
             Status = this->HashSecretkey->DecryptCode(this->sqlexe->value(2).toString());
-            count = this->HashSecretkey->DecryptCode(this->sqlexe->value(3).toString());
+            selltime = this->HashSecretkey->DecryptCode(this->sqlexe->value(3).toString());
+            totalvalue = this->HashSecretkey->DecryptCode(this->sqlexe->value(4).toString());
 
-            arg<<menu<<Status<<count;
+            arg<<menu<<Status<<selltime<<totalvalue;
 
             ret.insert(this->sqlexe->value(0).toInt(),arg);
+
+            arg.clear();
         }
 
         this->sqlexe->clear();
