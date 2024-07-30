@@ -34,7 +34,7 @@ Item{
             anchors.leftMargin: 40
             anchors.verticalCenter: parent.verticalCenter
             height: 40
-            placeholderText: qsTr("查看账单")
+            placeholderText: qsTr("现在显示的是历史账单")
         }
 
         Button{
@@ -45,6 +45,9 @@ Item{
             height: 36
             width: 80
             text:qsTr("搜索")
+            onClicked: {
+                controlEvent.findNode(textFind.text)
+            }
 
         }
 
@@ -59,6 +62,8 @@ Item{
             onClicked: {
                 controlEvent.isCurrent = true
                 controlEvent.getCurrentAccount()
+                textFind.text = qsTr("")
+                textFind.placeholderText = qsTr("现在显示的是当前账单")
             }
         }
         Button{
@@ -72,6 +77,8 @@ Item{
             onClicked: {
                 controlEvent.isCurrent = false
                 controlEvent.getHistotyAccount()
+                textFind.text = qsTr("")
+                textFind.placeholderText = qsTr("现在显示的是历史账单")
             }
         }
 

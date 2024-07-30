@@ -35,7 +35,7 @@ Window {
     Loader{
            id:myLoader
            anchors.fill: parent// 弹出的界面都布满全局
-           sourceComponent: loginPage
+           sourceComponent: orderPage
     }
 
     //登录页面-Component

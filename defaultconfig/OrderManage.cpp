@@ -21,11 +21,55 @@ QStringList Unpack(QString data)
     return RetData;
 }
 
+QStringList UpdateFind(int flag,QStringList arg,QStringList hash)
+{
+   int length = arg.size();
+   QStringList ret;
+   if(flag == 0)
+   {
+        int currentIndex;
+        for(int i = 0;i < length;i++)
+        {
+            currentIndex = hash.indexOf(arg.at(i));
+            ret<<hash.at(currentIndex)<<hash.at(currentIndex+1)<<hash.at(currentIndex+2)<<hash.at(currentIndex+3);
+        }
+   }
+   else if(flag == 1)
+   {
+       int currentIndex;
+       for(int i = 0;i < length;i++)
+       {
+           currentIndex = hash.indexOf(arg.at(i));
+           ret<<hash.at(currentIndex - 1)<<hash.at(currentIndex)<<hash.at(currentIndex+1)<<hash.at(currentIndex+2);
+       }
+   }
+   else if(flag == 2)
+   {
+       int currentIndex;
+       for(int i = 0;i < length;i++)
+       {
+           currentIndex = hash.indexOf(arg.at(i));
+           ret<<hash.at(currentIndex - 2)<<hash.at(currentIndex - 1)<<hash.at(currentIndex)<<hash.at(currentIndex+1);
+       }
+   }
+   else if(flag == 3)
+   {
+       int currentIndex;
+       for(int i = 0;i < length;i++)
+       {
+           currentIndex = hash.indexOf(arg.at(i));
+           ret<<hash.at(currentIndex - 3)<<hash.at(currentIndex -2)<<hash.at(currentIndex - 1)<<hash.at(currentIndex);
+       }
+   }
+   return ret;
+}
+
 OrderManage::OrderManage(QObject *parent)
     : QObject(parent)
 {
     this->sql = new Account;
     this->isCurrent = false;
+    this->isFind =false;
     getHistotyAccount();
     qDebug()<<Q_FUNC_INFO<<"OrderManage类构造";
 }
@@ -35,13 +79,7 @@ OrderManage::~OrderManage()
     qDebug()<<Q_FUNC_INFO<<"OrderManage类析构";
 }
 
-QStringList OrderManage::getMenu() const
-{
-    if(this->isCurrent)
-        return WorkConfig::menuList;
-    else
-        return menu;
-}
+
 
 void OrderManage::setMenu(const QStringList value)
 {
@@ -50,6 +88,20 @@ void OrderManage::setMenu(const QStringList value)
     else
         menu = value;
     emit menuChanged();
+}
+
+QStringList OrderManage::getMenu()
+{
+    if(isFind)
+    {
+        isFind = false;
+        setMenu(oldMenu);
+        oldMenu.clear();
+    }
+    if(this->isCurrent)
+        return WorkConfig::menuList;
+    else
+        return menu;
 }
 
 void OrderManage::getHistotyAccount()
@@ -116,6 +168,35 @@ void OrderManage::confirmMenu(QString data)
     WorkConfig::menuList.removeAt(WorkConfig::menuList.indexOf(delTwo));
     WorkConfig::menuList.removeAt(WorkConfig::menuList.indexOf(delThere));
     emit menuChanged();
+}
+
+void OrderManage::findNode(QString data)
+{
+     oldMenu = getMenu();
+     QString findData;
+     QStringList arg;
+     QStringList updateArg;
+
+     int length = oldMenu.size();
+     for(int i = 0;i < length;i++)
+     {
+        findData = oldMenu.at(i);
+        if(findData.contains(data))
+         {
+            qDebug()<<findData;
+            arg<<findData;
+         }
+     }
+     length = arg.size();
+     if(length == 0)//如果没有找到指定值
+     {
+        setMenu(arg);
+        return;
+     }
+     int flag = oldMenu.indexOf(arg.at(0)) % 4;
+     qDebug()<<"----:"<<flag;
+     setMenu(UpdateFind(flag,arg,oldMenu));
+     isFind = true;
 }
 
 bool OrderManage::getIsCurrent() const
