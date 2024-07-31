@@ -38,7 +38,8 @@ include(./network/network.pri)
 include(./defaultconfig/defaultconfig.pri)
 #资源池
 include(./sourcepool/sourcepool.pri)
-
+#串口通信
+include(./port/port.pri)
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
