@@ -35,7 +35,7 @@ Window {
     Loader{
            id:myLoader
            anchors.fill: parent// 弹出的界面都布满全局
-           sourceComponent: orderPage
+           sourceComponent: loginPage
     }
 
     //登录页面-Component
@@ -85,6 +85,7 @@ Window {
     Component{
         id:staffPage
         MyWidget.StaffManagement{
+            flagValue: rightRegister
         }
     }
 
@@ -172,19 +173,19 @@ Window {
          switch(index)
          {
              case 0:
-                 myLoader.sourceComponent = workPage
+                 myLoader.sourceComponent = workPage//工作台
                  break;
              case 1:
-                 myLoader.sourceComponent = dataPage
+                 myLoader.sourceComponent = dataPage//数据展示
                  break;
              case 2:
-                 myLoader.sourceComponent = orderPage
+                 myLoader.sourceComponent = orderPage//订单管理
                  break;
              case 3:
-                 myLoader.sourceComponent = typePage
+                 myLoader.sourceComponent = typePage//菜品管理
                  break;
              case 4:
-                 myLoader.sourceComponent = staffPage
+                 myLoader.sourceComponent = staffPage//员工管理
                  break;
              case 5:
                  myLoader.sourceComponent = classifyPage

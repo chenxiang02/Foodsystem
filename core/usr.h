@@ -33,6 +33,8 @@ public:
 
     QMap<int,QStringList> FindData(const int RightFind, const QStringList FindInfo) override;
 
+    CodeHandler * getSQLPas();
+
 private:
     QSqlDatabase ConnectSql;//sql操作
 

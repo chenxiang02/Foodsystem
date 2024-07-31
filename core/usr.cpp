@@ -375,3 +375,8 @@ QMap<int,QStringList> User::FindData(const int RightFind, const QStringList Find
 
     return ret;
 }
+
+CodeHandler *User::getSQLPas()
+{
+    return this->HashSecretkey;
+}

@@ -4,10 +4,6 @@ import QtQuick.Layouts 1.3
 import Config.OrderManage 1.0
 import "../myComponent" as CustomControl
 Item{
-
-    width: 640
-    height: 320
-
     OrderManage{
         id:controlEvent
     }
@@ -179,6 +175,6 @@ Item{
     }
 
     Component.onCompleted: {
-        console.log("OrderManagement loaded")
+        console.log("OrderManagement.qml loaded")
     }
 }

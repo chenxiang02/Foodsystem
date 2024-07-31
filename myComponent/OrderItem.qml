@@ -48,7 +48,6 @@ Item{
         id:totalText
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        text: qsTr("text")
     }
     Button{
         id:detailBtn
