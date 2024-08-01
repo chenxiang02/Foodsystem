@@ -386,3 +386,8 @@ QMap<int,QStringList> Food::FindData(const int RightFind, const QStringList Find
 
     return ret;
 }
+
+CodeHandler *Food::getPasOperater()
+{
+    return this->HashSecretkey;
+}

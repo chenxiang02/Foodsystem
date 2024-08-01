@@ -37,6 +37,8 @@ public:
     bool UpdateData(const int RightUpdate, const QStringList UpdateInfo) override;
 
     QMap<int,QStringList> FindData(const int RightFind, const QStringList FindInfo) override;
+
+    CodeHandler *getPasOperater();
 private:
     QSqlDatabase ConnectSql;//sql操作
 

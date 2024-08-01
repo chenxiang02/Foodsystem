@@ -11,6 +11,7 @@
 #include "defaultconfig/DataWidget.h"
 #include "defaultconfig/OrderManage.h"
 #include "defaultconfig/staff.h"
+#include "defaultconfig/TypeMenu.h"
 
 #include "network/CirThread.h"
 
@@ -27,6 +28,7 @@ void Register::registerClass(){
     qmlRegisterType<DataWidget>("Config.DataWidget",1,0,"DataWidget");
     qmlRegisterType<OrderManage>("Config.OrderManage",1,0,"OrderManage");
     qmlRegisterType<Staff>("Config.Staff",1,0,"Staff");
+    qmlRegisterType<TypeMenu>("Config.TypeMenu",1,0,"TypeMenu");
 
     //核心类实现后请在此处注入
      qmlRegisterType<MachineControl>("Core.MachineControl", 1, 0, "MachineControl");//机器控制

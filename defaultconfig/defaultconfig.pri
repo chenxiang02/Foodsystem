@@ -7,6 +7,7 @@ HEADERS += \
         $$PWD/DataWidget.h  \
         $$PWD/OrderManage.h  \
         $$PWD/staff.h  \
+        $$PWD/TypeMenu.h  \
         $$PWD/MenuDetail.h
 
 SOURCES += \
@@ -15,4 +16,5 @@ SOURCES += \
         $$PWD/DataWidget.cpp  \
         $$PWD/OrderManage.cpp  \
         $$PWD/staff.cpp  \
+        $$PWD/TypeMenu.cpp  \
         $$PWD/MenuDetail.cpp
