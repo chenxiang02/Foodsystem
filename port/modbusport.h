@@ -2,10 +2,10 @@
 #define _MODBUS_PORT_H
 
 #include "mircommunication.h"
-#include <QtSerialBus/QModbusDevice>
-#include <QtSerialBus/QModbusClient>
-#include <QtSerialBus/QModbusDataUnit>
-#include <QtSerialBus/QModbusTcpClient>
+#include <QtSerialBus>
+#include <QModbusRtuSerialMaster>
+#include <QModbusRequest>
+#include <QModbusResponse>
 
 class ModbusPort : public MirCommunication
 {
@@ -16,8 +16,6 @@ public:
 
     bool PortInit() override;
 
-    void setModbusType(int index) override;
-
     QSerialPortInfo getPort() override;
 
     QList<QSerialPortInfo> getPortList() override;
@@ -27,9 +25,12 @@ public:
 
     QString readInfo() override;
     void writeInfo(QString data) override;
+
+public slots:
+
 private:
     bool isUsed;
-    QModbusClient * serialClient;
+    QModbusRtuSerialMaster * modbs;
 };
 
 #endif

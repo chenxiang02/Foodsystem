@@ -7,4 +7,5 @@ MirCommunication::MirCommunication()
 
 MirCommunication::~MirCommunication()
 {
+    qDebug()<<Q_FUNC_INFO<<"MirCommunication类析构(虚基类)";
 }

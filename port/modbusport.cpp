@@ -2,26 +2,24 @@
 
 ModbusPort::ModbusPort()
 {
+    this->modbs = new QModbusRtuSerialMaster;
     qDebug()<<Q_FUNC_INFO<<"ModbusPort类构造";
 }
 
 ModbusPort::~ModbusPort()
 {
+    delete this->modbs;
     qDebug()<<Q_FUNC_INFO<<"ModbusPort类析构";
 }
 
 bool ModbusPort::PortInit()
 {
-
-}
-
-void ModbusPort::setModbusType(int index)
-{
-    if(index < 0 || index > 1 )
-    {
-        qDebug()<<"请按照正确规范传入参数 0:代表rtu通信 1:代表tcp通信";
-        return;
-    }
+    this->modbs->setConnectionParameter(QModbusDevice::SerialBaudRateParameter,QSerialPort::Baud115200);
+    this->modbs->setConnectionParameter(QModbusDevice::SerialDataBitsParameter,QSerialPort::Data8);
+    this->modbs->setConnectionParameter(QModbusDevice::SerialParityParameter,QSerialPort::NoParity);
+    this->modbs->setConnectionParameter(QModbusDevice::SerialStopBitsParameter,QSerialPort::OneStop);
+    isUsed = this->modbs->connectDevice();
+    return isUsed;
 }
 
 QSerialPortInfo ModbusPort::getPort()

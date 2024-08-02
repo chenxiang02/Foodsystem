@@ -1,4 +1,4 @@
-QT += quick core gui widgets sql network quickcontrols2 serialport charts
+QT += quick core gui widgets sql network quickcontrols2 serialport serialbus charts
 
 CONFIG += c++11
 
