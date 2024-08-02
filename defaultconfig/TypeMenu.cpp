@@ -1,18 +1,6 @@
 #include "TypeMenu.h"
 
-QString TypeMap(int type)
-{
-    switch (type)
-    {
-        case 0:
-        return "汤类";
-        case 1:
-        return "肉类";
-        case 2:
-        return "蔬菜";
-    }
 
-}
 
 
 TypeMenu::TypeMenu(QObject *parent)
@@ -29,7 +17,7 @@ TypeMenu::~TypeMenu()
 
 void TypeMenu::getFoods()
 {
-    QString selectStatement = "select foodname,foodtype,price from food;";
+    QString selectStatement = "select foodname,status,foodtype,price from food;";
     this->sql->getSqlOperater()->exec(selectStatement);
 
     QStringList arg;
@@ -38,12 +26,15 @@ void TypeMenu::getFoods()
     while (this->sql->getSqlOperater()->next())
     {
         arg<<this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(0).toString());
-        arg<<TypeMap(this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(1).toString()).toInt());
-        if(!type.contains(TypeMap(this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(1).toString()).toInt())))
-            type<<TypeMap(this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(1).toString()).toInt());
-        arg<<this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(2).toString());
-    }
 
+        if(!type.contains(typeMap(this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(2).toString()).toInt())))
+            type<<typeMap(this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(2).toString()).toInt());
+
+        arg<<this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(1).toString());
+        arg<<typeMap(this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(2).toString()).toInt());
+
+        arg<<this->sql->getPasOperater()->DecryptCode(this->sql->getSqlOperater()->value(3).toString());
+    }
     setFood(arg);
     setTypeList(type);
 }
@@ -134,6 +125,35 @@ void TypeMenu::deleteFood(QString data)
 
 void TypeMenu::modifyFood(QStringList data)
 {
+    QString foodname = data.at(0),price,status;
+
+    qDebug()<<data;
+    QString updateStatement = "update food set ";
+
+    if(!data.at(1).isEmpty())
+    {
+        updateStatement.append("price = '");
+        price = data.at(1);
+        updateStatement.append(this->sql->getPasOperater()->EncryptCode(price));
+        updateStatement.append("' ");
+    }
+
+    if(!data.at(2).isEmpty())
+    {
+        if(!data.at(1).isEmpty())
+            updateStatement.append(",");
+        updateStatement.append("status = '");
+        status = data.at(2);
+        updateStatement.append(this->sql->getPasOperater()->EncryptCode(status));
+        updateStatement.append("' ");
+    }
+
+    updateStatement.append("where foodname = '");
+    updateStatement.append(this->sql->getPasOperater()->EncryptCode(data.at(0)));
+    updateStatement.append("';");
+
+    this->sql->getSqlOperater()->exec(updateStatement);
+    getFoods();
 
 }
 

@@ -20,6 +20,21 @@ public:
     Q_INVOKABLE void addFood(QStringList data);
     Q_INVOKABLE void deleteFood(QString data);
     Q_INVOKABLE void modifyFood(QStringList data);
+    Q_INVOKABLE QString typeMap(int type)
+    {
+        if(!TypeList.isEmpty())
+            return TypeList.at(type);
+        switch (type)
+        {
+            case 0:
+            return "汤类";
+            case 1:
+            return "肉类";
+            case 2:
+            return "蔬菜";
+        }
+
+    }
 
     int decyTypeMap(QString data);
 

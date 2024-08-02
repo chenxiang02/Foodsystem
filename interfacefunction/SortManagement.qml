@@ -43,6 +43,8 @@ Item{
             width: 115
             text: qsTr("搜索")
             onClicked: {
+                if(textFind.text === "")
+                    return
                 controlType.findFood(textFind.text)
             }
         }
@@ -81,15 +83,15 @@ Item{
         width: parent.width
         height: parent.height - header.height
         clip: true
-        model: foodList.length / 3
+        model: foodList.length / 4
         spacing:10
 
         delegate: CustomControl.OrderItem{
             width: header.width
             height: 50
-            orderLabel.text: qsTr(foodList[index * 3])
-            timeLabel.text: qsTr(foodList[index * 3 + 1])
-            totalLabel.text: qsTr(foodList[index * 3 + 2])
+            orderLabel.text: qsTr(foodList[index * 4])
+            timeLabel.text: qsTr(foodList[index * 4 + 2])
+            totalLabel.text: qsTr(foodList[index * 4 + 3])
 
             detailbtn.text: qsTr("修改")
             cancelbtn.text: qsTr("删除")
@@ -100,6 +102,11 @@ Item{
 
             detailbtn.onClicked: {
                 updateComponent.visible = true
+                updateFoodName.text = qsTr("菜品:"+foodList[index * 4])
+                updatePrice.placeholderText = qsTr("当前价格为:"+foodList[index * 4 + 3])
+                let status = controlType.typeMap(foodList[index * 4 + 2])
+                updateStatus.placeholderText = qsTr("当前状态:"+status)
+
             }
         }
 
@@ -198,11 +205,61 @@ Item{
         Rectangle{
             anchors.centerIn: parent
             width: 240
-            height: 320
+            height: 260
             color: "black"
             Label{
+                id:updateFoodName
                 anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                anchors.topMargin: 10
+                color: "white"
+            }
 
+            TextField{
+                id:updatePrice
+                anchors.top: updateFoodName.bottom
+                anchors.topMargin: 20
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 200
+                placeholderTextColor:"white"
+                background: Rectangle{
+                    border.color: foodname.focus ? "lightpink" : "white"
+                    border.width: foodname.focus ? 3 : 1
+                }
+            }
+
+            TextField{
+                id:updateStatus
+                anchors.top: updatePrice.bottom
+                anchors.topMargin: 20
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 200
+                placeholderTextColor:"white"
+                background: Rectangle{
+                    border.color: foodname.focus ? "lightpink" : "white"
+                    border.width: foodname.focus ? 3 : 1
+                }
+            }
+
+
+            Label{
+                id:typePrompt
+                anchors.top: updateStatus.bottom
+                anchors.topMargin: 20
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: "red"
+                font.pixelSize: 20
+                font.bold:true
+            }
+
+            Timer{
+                id:promptTime
+                interval: 3000
+                repeat: false
+                running: false
+                onTriggered: {
+                    typePrompt.visible = false
+                }
             }
 
             Button{
@@ -212,6 +269,19 @@ Item{
                 anchors.leftMargin: 20
                 width: 80
                 text: qsTr("确认")
+                onClicked: {
+                    if(updateStatus.text === "" && updatePrice.text === "")
+                    {
+                        typePrompt.text = qsTr("请输入要修改内容")
+                        typePrompt.visible = true
+                        promptTime.running = true
+                        return
+                    }
+
+                    let modifyData = [updateFoodName.text.substring(3,12),updatePrice.text,updateStatus.text,]
+                    controlType.modifyFood(modifyData)
+                    updateComponent.visible = false
+                }
             }
             Button{
                 anchors.bottom: parent.bottom
