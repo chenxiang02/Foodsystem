@@ -12,6 +12,7 @@ SerialPort::SerialPort(QObject *parent)
 
 SerialPort::~SerialPort()
 {
+    this->serialport->close();
     delete this->serialport;
     qDebug()<<Q_FUNC_INFO<<"SerialPort类析构";
 }
@@ -38,6 +39,9 @@ bool SerialPort::PortInit()
 {
     bool isSuccess = true;//通过与操作 只要有false 则代表此次执行不成功
 
+    if(this->isUsed)
+        this->serialport->close();//断开上一个连接
+
     this->serialport->setPort(getPort());
 
     isSuccess &= this->serialport->setBaudRate(getBaudrate());
@@ -54,6 +58,8 @@ bool SerialPort::PortInit()
     isSuccess &= this->serialport->open(QIODevice::ReadWrite);
 
     this->isUsed = isSuccess;//判断是否初始化成功
+
+    connect(serialport,&QSerialPort::readyRead,this,&SerialPort::handlerMessage);
 
     return isSuccess;
 }
@@ -144,6 +150,12 @@ void SerialPort::ErrorPrompt(QSerialPort::SerialPortError error)
 {
     this->errorInfo = errorToString(error);
     qDebug()<<Q_FUNC_INFO<<errorToString(error);
+}
+
+void SerialPort::handlerMessage()
+{
+    if(this->readInfo().contains(QString::number(MessType::moveError)))
+        emit moveDevice();
 }
 
 

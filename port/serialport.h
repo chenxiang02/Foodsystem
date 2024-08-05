@@ -8,6 +8,13 @@ class SerialPort : public MirCommunication
 {
     Q_OBJECT
 public:
+
+    enum MessType{
+        moveError = 10001010,
+    };
+
+    Q_ENUM(MessType)
+
     SerialPort(QObject * parent = nullptr);
     ~SerialPort();
 
@@ -28,9 +35,13 @@ public:
 
     int getBaudrate() const;
     void setBaudrate(int value);
+signals:
+    void Success();
+    void moveDevice();
 
 public slots:
     void ErrorPrompt(QSerialPort::SerialPortError error);
+    void handlerMessage();
 
 private:
     QSerialPort * serialport;

@@ -12,6 +12,7 @@ HEADERS += \
         $$PWD/account.h \
         $$PWD/qaesencryption.h \
         $$PWD/CodeHandler.h \
+        $$PWD/port.h  \
         $$PWD/context.h
 
 SOURCES += \
@@ -24,4 +25,5 @@ SOURCES += \
         $$PWD/account.cpp \
         $$PWD/qaesencryption.cpp \
         $$PWD/CodeHandler.cpp \
+        $$PWD/port.cpp  \
         $$PWD/context.cpp

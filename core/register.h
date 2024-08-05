@@ -15,9 +15,8 @@ public:
     //服务注入类
     static void regiseterServe();
 
-    //资源池进行内容读取 可以考虑用redis
-    static void defineCount();
-
+    //注入硬件设备连接类
+    static void registerPort();
 
 };
 
