@@ -52,6 +52,16 @@ void User::SqlInit()
                        "password TEXT NOT NULL,"
                        "role TEXT NOT NULL"
                        ");");
+    QString findData = this->HashSecretkey->EncryptCode("root");
+    this->sqlexe->exec("select * from users where username='"+findData+"';");
+    if(!this->sqlexe->next())
+    {
+        QString UserName = this->HashSecretkey->EncryptCode("root");
+        QString PassWord = this->HashSecretkey->EncryptCode("123456");
+        this->sqlexe->exec("insert into users(id,username,password,role) "
+                           "values(1,'"+UserName+"','"+PassWord+"',"+"'2');");
+    }
+
 }
 
 QString User::getSpecificClassName()
@@ -318,17 +328,15 @@ QMap<int,QStringList> User::FindData(const int RightFind, const QStringList Find
             return ret;
         }
 
-        QString username,password,role;
+        QString username,password;
         QStringList arg;
 
         while(this->sqlexe->next())//将查询结果存储 并返回
         {
             username = this->HashSecretkey->DecryptCode(this->sqlexe->value(1).toString());
             password = this->HashSecretkey->DecryptCode(this->sqlexe->value(2).toString());
-            role = this->HashSecretkey->DecryptCode(this->sqlexe->value(3).toString());
 
-            arg<<username<<password<<role;
-
+            arg<<username<<password<<QString::number(this->sqlexe->value(3).toInt());
             ret.insert(this->sqlexe->value(0).toInt(),arg);
 
             arg.clear();//这里其实能考虑一下是申请空间快 还是清除空间快
@@ -372,7 +380,6 @@ QMap<int,QStringList> User::FindData(const int RightFind, const QStringList Find
     QStringList arg;
     arg<<"null";
     ret.insert(0,arg);
-
     return ret;
 }
 

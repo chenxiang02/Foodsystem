@@ -5,6 +5,24 @@ RightConfig::RightConfig()
     this->flag = -1;
     this->rightSet = new QSettings("Right.ini",QSettings::IniFormat);
 
+    QStringList arg;
+
+    if(!this->rightSet->contains("0"))
+    {
+        arg<<"工作台"<<"数据统计"<<"订单管理";
+        this->rightSet->setValue("0",arg);
+    }
+    if(!this->rightSet->contains("1"))
+    {
+        arg<<"菜品管理"<<"员工管理";
+        this->rightSet->setValue("1",arg);
+    }
+    if(!this->rightSet->contains("2"))
+    {
+        arg<<"分类管理";
+        this->rightSet->setValue("2",arg);
+    }
+
     qDebug()<<Q_FUNC_INFO<<"right配置类构造";
 }
 

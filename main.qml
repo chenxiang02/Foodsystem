@@ -19,7 +19,7 @@ Window {
     width: 640
     height: 480
     //flags: Qt.FramelessWindowHint //设置无标题窗口
-    title: qsTr("餐饮窗口")
+    title: qsTr("综管平台")
 
     ConfigRight{
          id:rightManager

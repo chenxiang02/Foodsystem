@@ -43,7 +43,6 @@ void Register::regiseterServe()//服务注入
 {
    CirThread* d = new CirThread;
    d->run();
-
 }
 
 #include "core/port.h"
